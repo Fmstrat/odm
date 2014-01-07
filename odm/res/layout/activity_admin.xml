@@ -1,0 +1,17 @@
+  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">    
+
+      <TextView android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:text="Open Device Manager requires admininistrative priviledges to function. Please enable them below."
+         android:layout_marginLeft="10dip"
+         android:layout_marginRight="10dip"
+         android:layout_marginTop="20dip"
+         android:layout_marginBottom="20dip" />
+      
+      <Button android:id="@+id/btnEnable" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Enable"/>
+        
+</LinearLayout>

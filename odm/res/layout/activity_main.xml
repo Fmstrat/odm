@@ -1,0 +1,23 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#ffffff" >
+
+    <Button
+        android:id="@+id/settingsButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:onClick="editSettings"
+        android:textColor="#000000"
+        android:text="Edit Settings" />
+     
+     <TextView android:id="@+id/lblMessage" 
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:textSize="16dip"
+         android:layout_margin="10dip"
+         android:textColor="#000000"/>
+
+</LinearLayout>
