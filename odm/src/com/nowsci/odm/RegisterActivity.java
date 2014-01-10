@@ -45,7 +45,11 @@ public class RegisterActivity extends Activity {
 		btnRegister = (Button) findViewById(R.id.btnRegister);
 		txtName.setText(getVAR("NAME"));
 		String su = getVAR("SERVER_URL");
-		String s = su.substring(0, (su.length() - 4));
+		String s;
+		if (su.length() > 5)
+			s = su.substring(0, (su.length() - 4));
+		else
+			s = su;
 		txtServerUrl.setText(s);
 		txtUsername.setText(getVAR("USERNAME"));
 		txtEncKey.setText(getVAR("ENC_KEY"));
