@@ -1,16 +1,25 @@
 package com.nowsci.odm;
 
 import static com.nowsci.odm.CommonUtilities.getVAR;
+
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ToggleButton;
 
 public class RegisterActivity extends Activity {
+
+	private static final String TAG = "RegisterActivity";
+
 	// alert dialog manager
 	AlertDialogManager alert = new AlertDialogManager();
 	// Internet detector
@@ -99,29 +108,43 @@ public class RegisterActivity extends Activity {
 					debug = "true";
 				else
 					debug = "false";
-				// Check if user filled the form
-				if (name.trim().length() > 0 && serverurl.trim().length() > 0 && username.trim().length() > 0 && enckey.trim().length() > 0) {
-					// Launch Main Activity to register user on server and send registration details
-					SharedPreferences mPrefs = getSharedPreferences("usersettings", 0);
-					SharedPreferences.Editor mEditor = mPrefs.edit();
-					String SERVER_URL = "";
-					if (serverurl.endsWith("/")) {
-						SERVER_URL = serverurl + "api/";
+				Boolean cont = false;
+				try {
+					URL u = new URL(serverurl);
+					u.toURI();
+					cont = true;
+				} catch (MalformedURLException e) {
+					Log.d(TAG, e.getMessage());
+				} catch (URISyntaxException e) {
+					Log.d(TAG, e.getMessage());
+				}
+				if (cont) {
+					// Check if user filled the form
+					if (name.trim().length() > 0 && serverurl.trim().length() > 0 && username.trim().length() > 0 && enckey.trim().length() > 0) {
+						// Launch Main Activity to register user on server and send registration details
+						SharedPreferences mPrefs = getSharedPreferences("usersettings", 0);
+						SharedPreferences.Editor mEditor = mPrefs.edit();
+						String SERVER_URL = "";
+						if (serverurl.endsWith("/")) {
+							SERVER_URL = serverurl + "api/";
+						} else {
+							SERVER_URL = serverurl + "/api/";
+						}
+						mEditor.putString("SERVER_URL", SERVER_URL).commit();
+						mEditor.putString("USERNAME", username).commit();
+						mEditor.putString("VALID_SSL", validssl).commit();
+						mEditor.putString("DEBUG", debug).commit();
+						mEditor.putString("ENC_KEY", enckey).commit();
+						mEditor.putString("NAME", name).commit();
+						Intent intent = new Intent(getApplicationContext(), StartupActivity.class);
+						startActivity(intent);
+						finish();
 					} else {
-						SERVER_URL = serverurl + "/api/";
+						// User hasn't filled in data
+						alert.showAlertDialog(RegisterActivity.this, "Registration Error!", "Please enter your details", false);
 					}
-					mEditor.putString("SERVER_URL", SERVER_URL).commit();
-					mEditor.putString("USERNAME", username).commit();
-					mEditor.putString("VALID_SSL", validssl).commit();
-					mEditor.putString("DEBUG", debug).commit();
-					mEditor.putString("ENC_KEY", enckey).commit();
-					mEditor.putString("NAME", name).commit();
-					Intent intent = new Intent(getApplicationContext(), StartupActivity.class);
-					startActivity(intent);
-					finish();
 				} else {
-					// User hasn't filled in data
-					alert.showAlertDialog(RegisterActivity.this, "Registration Error!", "Please enter your details", false);
+					alert.showAlertDialog(RegisterActivity.this, "Registration Error!", "Please enter a valid URL in the form http(s)://host.ext/dir", false);				
 				}
 			}
 		});
