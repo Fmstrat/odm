@@ -166,7 +166,7 @@ public final class CommonUtilities extends Activity {
 			*/
 
 			byte[] bytes = body.getBytes();
-			if (gVALID_SSL.equals("true")) {
+			if (!endpoint.startsWith("https") || gVALID_SSL.equals("true")) {
 				Logd(TAG, "Posting (valid) to " + url);
 				html = validPost(params, bytes, url);
 			} else {
@@ -181,6 +181,7 @@ public final class CommonUtilities extends Activity {
 		return html;
 	}
 
+	
 	static String validPost(Map<String, String> params, byte[] bytes, URL url) throws IOException {
 		String html = "";
 		HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.STRICT_HOSTNAME_VERIFIER;
