@@ -25,6 +25,7 @@ import javax.net.ssl.X509TrustManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -44,6 +45,7 @@ public final class CommonUtilities extends Activity {
 	static String gVALID_SSL = "";
 	static String gDEBUG = "";
 	static String gSENDER_ID = "590633583092";
+	static String gTOKEN = "";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -67,6 +69,8 @@ public final class CommonUtilities extends Activity {
 			return gDEBUG;
 		if (s.equals("SENDER_ID"))
 			return gSENDER_ID;
+		if (s.equals("TOKEN"))
+			return gTOKEN;
 		return "";
 	}
 
@@ -85,11 +89,17 @@ public final class CommonUtilities extends Activity {
 			gVALID_SSL = v;
 		if (s.equals("DEBUG"))
 			gDEBUG = v;
+		if (s.equals("TOKEN"))
+			gTOKEN = v;
 	}
 
 	static void Logd(String inTAG, String message) {
 		if (gDEBUG.equals("true"))
 			Log.d(inTAG, message);
+	}
+	
+	public static SharedPreferences myGetSharedPreferences (Context ctxt) {
+		   return ctxt.getSharedPreferences("usersettings", 0);
 	}
 
 	/**
@@ -194,7 +204,10 @@ public final class CommonUtilities extends Activity {
 		} else {
 			html = "Bad url";
 		}
-		Logd(TAG, "Server returned:" + html);
+		if (html.startsWith("success:"))
+			Logd(TAG, "Server returned: success:HIDDEN");
+		else
+			Logd(TAG, "Server returned: " + html);
 		return html;
 	}
 

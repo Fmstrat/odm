@@ -2,6 +2,7 @@ package com.nowsci.odm;
 
 import static com.nowsci.odm.CommonUtilities.Logd;
 import static com.nowsci.odm.CommonUtilities.setVAR;
+import static com.nowsci.odm.CommonUtilities.getVAR;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import android.app.IntentService;
@@ -16,6 +17,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.telephony.SmsManager;
+import android.util.Log;
 
 public class HelperIntentService extends IntentService {
 	private static final String TAG = "HelperIntentService";
@@ -48,12 +50,16 @@ public class HelperIntentService extends IntentService {
 					setVAR("REG_ID", mPrefs.getString("REG_ID", ""));
 					setVAR("VALID_SSL", mPrefs.getString("VALID_SSL", ""));
 					setVAR("DEBUG", mPrefs.getString("DEBUG", ""));
+					setVAR("TOKEN", mPrefs.getString("TOKEN", ""));
+					if (getVAR("TOKEN").equals("")) {
+						Log.e(TAG, "TOKEN is blank. You likely need to update the Web application and/or restart the ODM app to re-register.");
+					}
 					MCrypt mcrypt = new MCrypt();
 					String decrypted = new String(mcrypt.decrypt(msg));
 					Logd(TAG, "Received message: " + decrypted);
 					handleMessage(decrypted);
 				} catch (Exception e) {
-					Logd(TAG, e.getMessage());
+					Logd(TAG, "Error: " + e.getMessage());
 				}
 			}
 		}

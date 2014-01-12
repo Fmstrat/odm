@@ -16,7 +16,7 @@ public class MCrypt {
 	private SecretKeySpec keyspec;
 	private Cipher cipher;
 
-	private String SecretKey = getVAR("ENC_KEY");
+	private String SecretKey = getVAR("TOKEN");
 
 	public MCrypt() {
 		ivspec = new IvParameterSpec(iv.getBytes());

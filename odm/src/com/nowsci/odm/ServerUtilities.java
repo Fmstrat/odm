@@ -3,11 +3,13 @@ package com.nowsci.odm;
 import static com.nowsci.odm.CommonUtilities.displayMessage;
 import static com.nowsci.odm.CommonUtilities.Logd;
 import static com.nowsci.odm.CommonUtilities.getVAR;
+import static com.nowsci.odm.CommonUtilities.setVAR;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -35,8 +37,12 @@ public final class ServerUtilities {
 				try {
 					displayMessage(context, "Attempting to register.");
 					String html = CommonUtilities.post(serverUrl, postparams);
-					Logd(TAG, html);
-					if (html.equals("success")) {
+					if (html.startsWith("success:")) {
+						String token = html.replaceFirst("success:", "");
+						setVAR("TOKEN", token);
+						SharedPreferences mPrefs = context.getSharedPreferences("usersettings", 0);
+						SharedPreferences.Editor mEditor = mPrefs.edit();
+						mEditor.putString("TOKEN", token).commit();
 						displayMessage(context, "Server successfully registered device.");
 					} else {
 						displayMessage(context, "Server registration failed, check your settings.");

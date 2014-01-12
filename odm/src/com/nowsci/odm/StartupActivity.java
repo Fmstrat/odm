@@ -1,6 +1,7 @@
 package com.nowsci.odm;
 
 import static com.nowsci.odm.CommonUtilities.Logd;
+import static com.nowsci.odm.CommonUtilities.getVAR;
 import static com.nowsci.odm.CommonUtilities.setVAR;
 
 import java.net.MalformedURLException;
@@ -33,6 +34,10 @@ public class StartupActivity extends Activity {
 		setVAR("REG_ID", mPrefs.getString("REG_ID", ""));
 		setVAR("VALID_SSL", mPrefs.getString("VALID_SSL", ""));
 		setVAR("DEBUG", mPrefs.getString("DEBUG", ""));
+		setVAR("TOKEN", mPrefs.getString("TOKEN", ""));
+		if (getVAR("TOKEN").equals("")) {
+			Log.e(TAG, "TOKEN is blank. You likely need to update the Web application and/or restart the ODM app to re-register.");
+		}
 		
 		// Eliminate FC's from bad URL in settings for previous users
 		if (!su.equals("")) {
