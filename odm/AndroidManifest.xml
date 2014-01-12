@@ -34,6 +34,9 @@
 
     <!-- Permission to location -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    
+    <!-- Permission for alert window (for pictures) -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <!-- Permission for camera and saving photo-->
 	<uses-permission android:name="android.permission.CAMERA"/>

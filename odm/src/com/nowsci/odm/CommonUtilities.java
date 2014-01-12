@@ -133,18 +133,26 @@ public final class CommonUtilities extends Activity {
 		}
 		if (cont) {
 			StringBuilder bodyBuilder = new StringBuilder();
+			StringBuilder bodyBuilderDebug = new StringBuilder();
 			Iterator<Entry<String, String>> iterator = params.entrySet().iterator();
 			// constructs the POST body using the parameters
 			while (iterator.hasNext()) {
 				Entry<String, String> param = iterator.next();
 				bodyBuilder.append(param.getKey()).append('=').append(param.getValue());
+				if (param.getKey().equals("username"))
+					bodyBuilderDebug.append("username").append('=').append("HIDDEN").append(param.getValue().length());
+				else if (param.getKey().equals("password"))
+					bodyBuilderDebug.append("password").append('=').append("HIDDEN").append(param.getValue().length());
+				else
+					bodyBuilderDebug.append(param.getKey()).append('=').append(param.getValue());
 				if (iterator.hasNext()) {
 					bodyBuilder.append('&');
+					bodyBuilderDebug.append('&');
 				}
 			}
 			String body = bodyBuilder.toString();
 			// Only to be used for major debug purposes as it reveals usernames and passwords.
-			//Logd(TAG, "Posting '" + body + "' to " + url);
+			Logd(TAG, "Posting '" + bodyBuilderDebug.toString() + "' to " + url);
 
 			// The below is for v2.
 			// In v2, we will encrypt/decrypt completely on client in Android and Javascript
@@ -174,10 +182,10 @@ public final class CommonUtilities extends Activity {
 				html = invalidPost(params, bytes, url);
 			}
 			Logd(TAG, "Completed post");
-			//Logd(TAG, "HTML:" + html);
 		} else {
-			html = "bad url";
+			html = "Bad url";
 		}
+		Logd(TAG, "Server returned:" + html);
 		return html;
 	}
 
