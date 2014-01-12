@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Base64;
 
 public final class CommonUtilities extends Activity {
 
@@ -181,6 +182,14 @@ public final class CommonUtilities extends Activity {
 		return html;
 	}
 
+        static void setBasicAuthentication(HttpURLConnection conn, String url) {
+		String userInfo = url.getUserInfo();
+		if (userInfo != null && userInfo.length() > 0) {
+			String authString = Base64.encodeToString(userInfo.getBytes(), Base64.DEFAULT);
+			conn.setRequestProperty("Authorization", "Basic " + authString);
+		}
+	}
+
 	static String validPost(Map<String, String> params, byte[] bytes, URL url) throws IOException {
 		String html = "";
 		HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.STRICT_HOSTNAME_VERIFIER;
@@ -193,6 +202,7 @@ public final class CommonUtilities extends Activity {
 			conn.setUseCaches(false);
 			conn.setFixedLengthStreamingMode(bytes.length);
 			conn.setRequestMethod("POST");
+			setBasicAuthentication(conn, url);
 			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
 			// post the request
 			OutputStream out = conn.getOutputStream();
@@ -261,6 +271,7 @@ public final class CommonUtilities extends Activity {
 			conn.setDoOutput(true);
 			conn.setUseCaches(false);
 			conn.setFixedLengthStreamingMode(bytes.length);
+			setBasicAuthentication(conn, url);
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
 			// post the request
