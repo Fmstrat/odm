@@ -88,6 +88,19 @@ public class HelperIntentService extends IntentService {
 				Logd(TAG, "Locking device");
 				mDPM.lockNow();
 			}
+		} else if (message.startsWith("Command:LockPass:")) {
+			String password = message.replaceFirst("Command:LockPass:", "");
+			DevicePolicyManager mDPM;
+			mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+			ComponentName mDeviceAdmin;
+			mDeviceAdmin = new ComponentName(context, GetAdminReceiver.class);
+			if (mDPM.isAdminActive(mDeviceAdmin)) {
+				Logd(TAG, "Locking device with password");
+				mDPM.setPasswordQuality(mDeviceAdmin,DevicePolicyManager.PASSWORD_QUALITY_UNSPECIFIED);
+				mDPM.setPasswordMinimumLength(mDeviceAdmin, 4);
+				mDPM.resetPassword(password, DevicePolicyManager.RESET_PASSWORD_REQUIRE_ENTRY);
+				mDPM.lockNow();
+			}
 		} else if (message.equals("Command:StartRing")) {
 			Logd(TAG, "About to start ringer service.");
 			Intent intent = new Intent("com.nowsci.odm.AudioService");
