@@ -46,6 +46,7 @@ public final class CommonUtilities extends Activity {
 	static String gDEBUG = "";
 	static String gSENDER_ID = "590633583092";
 	static String gTOKEN = "";
+	static String gVERSION = "";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -71,6 +72,8 @@ public final class CommonUtilities extends Activity {
 			return gSENDER_ID;
 		if (s.equals("TOKEN"))
 			return gTOKEN;
+		if (s.equals("VERSION"))
+			return gVERSION;
 		return "";
 	}
 
@@ -91,6 +94,8 @@ public final class CommonUtilities extends Activity {
 			gDEBUG = v;
 		if (s.equals("TOKEN"))
 			gTOKEN = v;
+		if (s.equals("VERSION"))
+			gVERSION = v;
 	}
 
 	static void Logd(String inTAG, String message) {
@@ -320,6 +325,59 @@ public final class CommonUtilities extends Activity {
 			Logd(TAG, "Failed to post to server: " + e.getMessage());
 		} catch (KeyManagementException e) {
 			Logd(TAG, "Failed to post to server: " + e.getMessage());
+		}
+		if (conn != null) {
+			conn.disconnect();
+		}
+		return html;
+	}
+	
+	static String get(String endpoint) throws IOException {
+		URL url;
+		String html = "";
+		Logd(TAG, "Starting post...");
+		Boolean cont = true;
+		try {
+			url = new URL(endpoint);
+		} catch (MalformedURLException e) {
+			Log.e(TAG, "Invalid url: " + endpoint);
+			cont = false;
+			throw new IllegalArgumentException("Invalid url: " + endpoint);
+		}
+		if (cont) {
+			html = validGet(url);
+		} else {
+			html = "Bad url";
+		}
+		return html;
+	}
+	
+	static String validGet(URL url) throws IOException {
+		String html = "";
+		HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.STRICT_HOSTNAME_VERIFIER;
+		HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
+		// TODO ensure HttpsURLConnection.setDefaultSSLSocketFactory isn't required to be reset like hostnames are
+		HttpURLConnection conn = null;
+		try {
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setUseCaches(false);
+			conn.setRequestMethod("GET");
+			setBasicAuthentication(conn, url);
+			int status = conn.getResponseCode();
+			if (status != 200) {
+				Logd(TAG, "Failed to get from server, returned code: " + status);
+				throw new IOException("Get failed with error code " + status);
+			} else {
+				InputStreamReader in = new InputStreamReader(conn.getInputStream());
+				BufferedReader br = new BufferedReader(in);
+				String decodedString;
+				while ((decodedString = br.readLine()) != null) {
+					html += decodedString;
+				}
+				in.close();
+			}
+		} catch (IOException e) {
+			Logd(TAG, "Failed to get from server: " + e.getMessage());
 		}
 		if (conn != null) {
 			conn.disconnect();

@@ -31,6 +31,7 @@ public class RegisterActivity extends Activity {
 	EditText txtEncKey;
 	ToggleButton tglValidSSL;
 	ToggleButton tglDebug;
+	ToggleButton tglVersion;
 	Button btnRegister;
 
 	@Override
@@ -51,6 +52,7 @@ public class RegisterActivity extends Activity {
 		txtEncKey = (EditText) findViewById(R.id.txtEncKey);
 		tglValidSSL = (ToggleButton) findViewById(R.id.tglValidSSL);
 		tglDebug = (ToggleButton) findViewById(R.id.tglDebug);
+		tglVersion = (ToggleButton) findViewById(R.id.tglVersion);
 		btnRegister = (Button) findViewById(R.id.btnRegister);
 		txtName.setText(getVAR("NAME"));
 		String su = getVAR("SERVER_URL");
@@ -70,6 +72,10 @@ public class RegisterActivity extends Activity {
 			tglDebug.setChecked(true);
 		else
 			tglDebug.setChecked(false);
+		if (getVAR("VERSION").equals("true"))
+			tglVersion.setChecked(true);
+		else
+			tglVersion.setChecked(false);
 
 		// These lines are for debugging only.
 		// NOTE: FORDEVEL
@@ -100,6 +106,7 @@ public class RegisterActivity extends Activity {
 				String enckey = txtEncKey.getText().toString();
 				String validssl = "";
 				String debug = "";
+				String version = "";
 				if (tglValidSSL.isChecked())
 					validssl = "true";
 				else
@@ -108,6 +115,10 @@ public class RegisterActivity extends Activity {
 					debug = "true";
 				else
 					debug = "false";
+				if (tglVersion.isChecked())
+					version = "true";
+				else
+					version = "false";
 				Boolean cont = false;
 				try {
 					URL u = new URL(serverurl);
@@ -136,7 +147,9 @@ public class RegisterActivity extends Activity {
 						mEditor.putString("DEBUG", debug).commit();
 						mEditor.putString("ENC_KEY", enckey).commit();
 						mEditor.putString("NAME", name).commit();
+						mEditor.putString("VERSION", version).commit();
 						Intent intent = new Intent(getApplicationContext(), StartupActivity.class);
+						intent.putExtra("VERSION_CHECK", false);
 						startActivity(intent);
 						finish();
 					} else {

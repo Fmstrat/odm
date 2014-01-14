@@ -120,6 +120,31 @@
 		    android:layout_toRightOf="@+id/tglDebug"
 		    android:text="Debug to Logcat" />
 
+	</RelativeLayout>
+	<RelativeLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content" >
+
+		<ToggleButton
+		    android:id="@+id/tglVersion"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentLeft="true"
+		    android:layout_alignParentTop="true"
+		    android:layout_margin="10dip"
+		    android:textOn="YES"
+		    android:textOff="NO"
+		    android:text="ToggleButton" />
+
+		<TextView
+		    android:id="@+id/textView3"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignBaseline="@+id/tglVersion"
+		    android:layout_alignBottom="@+id/tglVersion"
+		    android:layout_toRightOf="@+id/tglVersion"
+		    android:text="Check for new version when opening ODM" />
+
 	</RelativeLayout>	
 	<Button
          android:id="@+id/btnRegister"

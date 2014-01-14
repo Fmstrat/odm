@@ -35,7 +35,7 @@ public final class ServerUtilities {
 				postparams.put("username", getVAR("USERNAME"));
 				postparams.put("password", getVAR("ENC_KEY"));
 				try {
-					displayMessage(context, "Attempting to register.");
+					displayMessage(context, "Attempting to register...");
 					String html = CommonUtilities.post(serverUrl, postparams);
 					if (html.startsWith("success:")) {
 						String token = html.replaceFirst("success:", "");

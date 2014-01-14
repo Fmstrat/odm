@@ -54,6 +54,7 @@ public class HelperIntentService extends IntentService {
 					if (getVAR("TOKEN").equals("")) {
 						Log.e(TAG, "TOKEN is blank. You likely need to update the Web application and/or restart the ODM app to re-register.");
 					}
+					setVAR("VERSION", mPrefs.getString("VERSION", ""));
 					MCrypt mcrypt = new MCrypt();
 					String decrypted = new String(mcrypt.decrypt(msg));
 					Logd(TAG, "Received message: " + decrypted);

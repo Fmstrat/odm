@@ -20,6 +20,7 @@ import android.util.Log;
 public class StartupActivity extends Activity {
 
 	private static final String TAG = "StartupActivity";
+	Boolean version_check = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -37,6 +38,16 @@ public class StartupActivity extends Activity {
 		setVAR("TOKEN", mPrefs.getString("TOKEN", ""));
 		if (getVAR("TOKEN").equals("")) {
 			Log.e(TAG, "TOKEN is blank. You likely need to update the Web application and/or restart the ODM app to re-register.");
+		}
+		// Default to true to start version checks from here out
+		setVAR("VERSION", mPrefs.getString("VERSION", "true"));
+		if (getVAR("VERSION").equals("true"))
+			version_check = true;
+		else
+			version_check = false;
+		Bundle extras = getIntent().getExtras();
+		if (extras != null) {
+		    version_check = extras.getBoolean("VERSION_CHECK", true);
 		}
 		
 		// Eliminate FC's from bad URL in settings for previous users
@@ -76,6 +87,8 @@ public class StartupActivity extends Activity {
 				startActivity(i);
 			} else {
 				Intent i = new Intent(getApplicationContext(), MainActivity.class);
+				if (version_check)
+					i.putExtra("VERSION_CHECK", version_check);
 				startActivity(i);
 			}
 		} else {
