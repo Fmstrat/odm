@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.nowsci.odm"
-    android:versionCode="1"
-    android:versionName="0.1" >
+    android:versionCode="2"
+    android:versionName="0.2" >
 
     <!-- GCM requires Android SDK version 2.2 (API level 8) or above. -->
     <uses-sdk
@@ -110,6 +110,14 @@
 				<intent-filter>
 					<action android:name="android.app.action.DEVICE_ADMIN_ENABLED"></action>
 				</intent-filter>
+		</receiver>
+		
+		<receiver android:process=":remote" android:name="UpdateAlarm"></receiver>
+		
+		<receiver android:name="com.nowsci.odm.AutoStart">
+    		<intent-filter>
+        		<action android:name="android.intent.action.BOOT_COMPLETED"></action>
+    		</intent-filter>
 		</receiver>
         
         <service android:name="com.nowsci.odm.HelperIntentService" />

@@ -1,28 +1,21 @@
 package com.nowsci.odm;
 
 import static com.nowsci.odm.CommonUtilities.Logd;
-import static com.nowsci.odm.CommonUtilities.displayMessage;
 import static com.nowsci.odm.CommonUtilities.getVAR;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -83,35 +76,13 @@ public class MainActivity extends Activity {
 
 		@Override
 		protected String doInBackground(String... arg0) {
-			if (version_check) {
-				displayMessage(context, "Checking for new version...");
-				int versionCode = 0;
-				String html = "";
-				try {
-					versionCode = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
-				} catch (NameNotFoundException e) {
-					Log.e(TAG, "Error: " + e.getMessage());
-				}
-				Log.d(TAG, "versionCode: " + versionCode);
-				String vc = "android:versionCode=\"" + versionCode + "\"";
-				try {
-					html = CommonUtilities.get("https://raw.github.com/Fmstrat/odm/master/odm/AndroidManifest.xml");
-				} catch (IOException e) {
-					Log.e(TAG, "Error: " + e.getMessage());
-				}
-				if (!html.equals("")) {
-					Pattern pattern = Pattern.compile("android:versionCode=\"[^\"]\"");
-					Matcher matcher = pattern.matcher(html);
-					while (matcher.find()) {
-						Logd(TAG,"Match: " + matcher.group());
-						if (!vc.equals(matcher.group())) {
-							// There is a new version
-							displayMessage(context, "A new version of ODM is available, download now: <a href='https://github.com/Fmstrat/odm/raw/master/latest/odm.apk'>https://github.com/Fmstrat/odm/raw/master/latest/odm.apk</a>");
-						} else {
-							displayMessage(context, "You are running the most up to date version.");
-						}
-					}
-				}
+			boolean alarmUp = (PendingIntent.getBroadcast(context, 0, new Intent("com.nowsci.odm:remote"), PendingIntent.FLAG_NO_CREATE) != null);
+			if (!alarmUp) {
+				Logd(TAG, "Starting alarm.");
+				UpdateAlarm updateAlarm = new UpdateAlarm();
+				updateAlarm.SetAlarm(context);
+			} else {
+				Logd(TAG, "Alarm already running.");
 			}
 			try {
 				Logd(TAG, "Checking if GCM is null.");

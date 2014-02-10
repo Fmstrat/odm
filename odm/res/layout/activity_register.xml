@@ -143,7 +143,7 @@
 		    android:layout_alignBaseline="@+id/tglVersion"
 		    android:layout_alignBottom="@+id/tglVersion"
 		    android:layout_toRightOf="@+id/tglVersion"
-		    android:text="Check for new version when opening ODM" />
+		    android:text="Check for new versions" />
 
 	</RelativeLayout>	
 	<Button
@@ -151,7 +151,7 @@
          android:layout_width="fill_parent"
          android:layout_height="wrap_content"
          android:layout_margin="10dip"
-         android:text="Register" />
+         android:text="Save Settings" />
 
 
            </LinearLayout>

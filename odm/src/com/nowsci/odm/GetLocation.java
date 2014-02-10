@@ -16,7 +16,7 @@ public class GetLocation {
 	boolean gps_enabled = false;
 	boolean network_enabled = false;
 
-	public boolean getLocation(Context context, LocationResult result) {
+	public boolean getLocation(Context context, LocationResult result, Boolean gpsonly) {
 		// Use LocationResult callback class to pass location value from GetLocation to user code.
 		locationResult = result;
 		if (lm == null)
@@ -38,7 +38,7 @@ public class GetLocation {
 
 		if (gps_enabled)
 			lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListenerGps);
-		if (network_enabled)
+		if (network_enabled && !gpsonly)
 			lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListenerNetwork);
 		timer1 = new Timer();
 		timer1.schedule(new GetLastLocation(), 20000);

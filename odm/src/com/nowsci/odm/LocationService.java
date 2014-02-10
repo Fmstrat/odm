@@ -19,6 +19,7 @@ import android.os.IBinder;
 public class LocationService extends Service {
 	private static final String TAG = "LocationService";
 	Context context;
+	Boolean gpsonly = false;
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -28,6 +29,10 @@ public class LocationService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		context = getApplicationContext();
+		String message = intent.getStringExtra("message");
+		context = getApplicationContext();
+		if (message.equals("Command:GetLocationGPS"))
+			gpsonly = true;
 		LocationResult locationResult = new LocationResult() {
 			@Override
 			public void gotLocation(Location location) {
@@ -60,7 +65,7 @@ public class LocationService extends Service {
 			}
 		};
 		GetLocation myLocation = new GetLocation();
-		myLocation.getLocation(context, locationResult);
+		myLocation.getLocation(context, locationResult, gpsonly);
 		return START_STICKY;
 	}
 

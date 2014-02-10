@@ -121,9 +121,10 @@ public class HelperIntentService extends IntentService {
 			Intent intent = new Intent("com.nowsci.odm.CameraService");
 			intent.putExtra("message", message);
 			context.startService(intent);
-		} else if (message.equals("Command:GetLocation")) {
+		} else if (message.equals("Command:GetLocation") || message.equals("Command:GetLocationGPS")) {
 			Logd(TAG, "About to start location service.");
 			Intent intent = new Intent("com.nowsci.odm.LocationService");
+			intent.putExtra("message", message);
 			context.startService(intent);
 		}
 		// Releasing wake lock
