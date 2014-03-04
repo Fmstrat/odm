@@ -2,16 +2,48 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">    
+    android:orientation="vertical">
+
+      <TextView
+          android:id="@+id/textView1"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/main_welcome"
+          android:layout_marginLeft="10dip"
+          android:layout_marginRight="10dip"
+          android:layout_marginTop="20dip"
+          android:layout_marginBottom="10dip"
+          android:textAppearance="?android:attr/textAppearanceLarge" />
+
+      <TextView
+          android:id="@+id/textView2"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/main_desc"
+          android:layout_marginLeft="10dip"
+          android:layout_marginRight="10dip"
+          android:layout_marginBottom="20dip"
+          android:textAppearance="?android:attr/textAppearanceMedium" />
+      
+       <TextView
+          android:id="@+id/textView3"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/main_desc2"
+          android:autoLink="web"
+          android:layout_marginLeft="10dip"
+          android:layout_marginRight="10dip"
+          android:layout_marginBottom="20dip"
+          android:textAppearance="?android:attr/textAppearanceMedium" />
 
       <TextView android:layout_width="fill_parent"
          android:layout_height="wrap_content"
-         android:text="Open Device Manager requires admininistrative priviledges to function. Please enable them below."
+         android:text="@string/admin_required"
          android:layout_marginLeft="10dip"
          android:layout_marginRight="10dip"
          android:layout_marginTop="20dip"
          android:layout_marginBottom="20dip" />
       
-      <Button android:id="@+id/btnEnable" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Enable"/>
+      <Button android:id="@+id/btnEnable" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/enable"/>
         
 </LinearLayout>

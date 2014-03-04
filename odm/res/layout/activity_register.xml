@@ -1,159 +1,188 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/Key"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
-     
-<ScrollView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-            <LinearLayout 
-                  android:layout_width="fill_parent"
-                  android:layout_height="wrap_content"
-                  android:orientation="vertical">
-                  
-    <TextView android:layout_width="fill_parent"
-         android:layout_height="wrap_content"
-         android:text="Device Name:"
-         android:layout_marginLeft="10dip"
-         android:layout_marginRight="10dip"
-         android:layout_marginTop="20dip"/>
-     
-     <EditText
-         android:id="@+id/txtName"
-         android:layout_width="fill_parent"
-         android:layout_height="wrap_content"
-         android:layout_margin="10dip"
-         android:layout_marginBottom="20dip" />
-     
-     <TextView android:layout_width="fill_parent"
-         android:layout_height="wrap_content"
-         android:text="Server URL:"
-         android:layout_marginLeft="10dip"
-         android:layout_marginRight="10dip"/>
-     
-     <EditText
-         android:id="@+id/txtServerUrl"
-         android:layout_width="fill_parent"
-         android:layout_height="wrap_content"
-         android:inputType="textUri"
-         android:layout_margin="10dip"
-         android:layout_marginBottom="20dip" />
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:layout_marginTop="20dip"
+            android:text="@string/register_devname" />
 
-     <TextView
-         android:layout_width="fill_parent"
-         android:layout_height="wrap_content"
-         android:layout_marginLeft="10dip"
-         android:layout_marginRight="10dip"
-         android:text="Username" />
+        <EditText
+            android:id="@+id/txtName"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dip"
+            android:layout_marginBottom="20dip"
+            android:inputType="text" />
 
-     <EditText
-         android:id="@+id/txtUsername"
-         android:layout_width="fill_parent"
-         android:layout_height="wrap_content"
-         android:layout_margin="10dip"
-         android:layout_marginBottom="20dip"
-         android:ems="10" />
-     
-     <TextView
-         android:layout_width="fill_parent"
-         android:layout_height="wrap_content"
-         android:layout_marginLeft="10dip"
-         android:layout_marginRight="10dip"
-         android:text="Password:" />
+        <TextView
+            android:id="@+id/txtServerUrlLbl"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:text="@string/register_serverurl"
+            android:visibility="gone" />
 
-     <EditText
-         android:id="@+id/txtEncKey"
-         android:layout_width="fill_parent"
-         android:layout_height="wrap_content"
-         android:layout_margin="10dip"
-         android:layout_marginBottom="10dip"
-         android:inputType="textPassword"
-         android:ems="10" />
-	<RelativeLayout
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content" >
+        <EditText
+            android:id="@+id/txtServerUrl"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dip"
+            android:layout_marginBottom="20dip"
+            android:hint="@string/spn_serv_url"
+            android:inputType="textUri"
+            android:text="@string/spn_serv_url"
+            android:visibility="gone" />
 
-		<ToggleButton
-		    android:id="@+id/tglValidSSL"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_alignParentLeft="true"
-		    android:layout_alignParentTop="true"
-		    android:layout_margin="10dip"
-		    android:textOn="YES"
-		    android:textOff="NO"
-		    android:text="ToggleButton" />
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:text="@string/register_username" />
 
-		<TextView
-		    android:id="@+id/textView1"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_alignBaseline="@+id/tglValidSSL"
-		    android:layout_alignBottom="@+id/tglValidSSL"
-		    android:layout_toRightOf="@+id/tglValidSSL"
-		    android:text="Force valid SSL certs" />
+        <EditText
+            android:id="@+id/txtUsername"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dip"
+            android:layout_marginBottom="20dip"
+            android:ems="10"
+            android:inputType="text" />
 
-	</RelativeLayout>
-	<RelativeLayout
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content" >
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:text="@string/register_password" />
 
-		<ToggleButton
-		    android:id="@+id/tglDebug"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_alignParentLeft="true"
-		    android:layout_alignParentTop="true"
-		    android:layout_margin="10dip"
-		    android:textOn="YES"
-		    android:textOff="NO"
-		    android:text="ToggleButton" />
+        <EditText
+            android:id="@+id/txtEncKey"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dip"
+            android:layout_marginBottom="10dip"
+            android:ems="10"
+            android:inputType="textPassword" />
 
-		<TextView
-		    android:id="@+id/textView2"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_alignBaseline="@+id/tglDebug"
-		    android:layout_alignBottom="@+id/tglDebug"
-		    android:layout_toRightOf="@+id/tglDebug"
-		    android:text="Debug to Logcat" />
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:text="@string/register_pin" />
 
-	</RelativeLayout>
-	<RelativeLayout
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content" >
+        <EditText
+            android:id="@+id/txtPin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dip"
+            android:layout_marginBottom="10dip"
+            android:ems="10"
+            android:inputType="numberPassword" >
+        </EditText>
 
-		<ToggleButton
-		    android:id="@+id/tglVersion"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_alignParentLeft="true"
-		    android:layout_alignParentTop="true"
-		    android:layout_margin="10dip"
-		    android:textOn="YES"
-		    android:textOff="NO"
-		    android:text="ToggleButton" />
+        <RelativeLayout
+            android:id="@+id/layout_checkssl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" >
 
-		<TextView
-		    android:id="@+id/textView3"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_alignBaseline="@+id/tglVersion"
-		    android:layout_alignBottom="@+id/tglVersion"
-		    android:layout_toRightOf="@+id/tglVersion"
-		    android:text="Check for new versions" />
+            <ToggleButton
+                android:id="@+id/tglValidSSL"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="10dip"
+                android:checked="true"
+                android:text="@string/toggle"
+                android:textOff="@string/no"
+                android:textOn="@string/yes" />
 
-	</RelativeLayout>	
-	<Button
-         android:id="@+id/btnRegister"
-         android:layout_width="fill_parent"
-         android:layout_height="wrap_content"
-         android:layout_margin="10dip"
-         android:text="Save Settings" />
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/tglValidSSL"
+                android:layout_alignBottom="@+id/tglValidSSL"
+                android:layout_toRightOf="@+id/tglValidSSL"
+                android:text="@string/register_checkssl" />
+        </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/layout_debugadb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" >
 
-           </LinearLayout>
-      </ScrollView>
-</LinearLayout>
+            <ToggleButton
+                android:id="@+id/tglDebug"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="10dip"
+                android:checked="false"
+                android:text="@string/toggle"
+                android:textOff="@string/no"
+                android:textOn="@string/yes" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/tglDebug"
+                android:layout_alignBottom="@+id/tglDebug"
+                android:layout_toRightOf="@+id/tglDebug"
+                android:text="@string/register_debug" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_checkversion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" >
+
+            <ToggleButton
+                android:id="@+id/tglVersion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="10dip"
+                android:checked="true"
+                android:text="@string/toggle"
+                android:textOff="@string/no"
+                android:textOn="@string/yes" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/tglVersion"
+                android:layout_alignBottom="@+id/tglVersion"
+                android:layout_toRightOf="@+id/tglVersion"
+                android:text="@string/register_checkversion" />
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/btnRegister"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dip"
+            android:text="@string/register_save" />
+    </LinearLayout>
+
+</ScrollView>

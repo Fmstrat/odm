@@ -1,0 +1,58 @@
+<resources>
+
+    <string name="app_name">Open Device Manager</string>
+    <string name="app_name_short">ODM</string>    
+    
+    <!-- misc -->
+    <string name="yes">JA</string>
+	<string name="no">NEIN</string>
+	<string name="ok">OK</string>
+	<string name="cancel">Abbrechen</string>
+	<string name="enable">Aktivieren</string>
+	<string name="disable">Deaktivieren</string>
+	<string name="toggle">Umschalten</string>
+	
+	<!-- configurable values -->
+	<string name="spn_serv_url">http://nowsci.com/odm/</string>
+	<string name="play_url">https://play.google.com/store/apps/details?id=com.nowsci.odm</string>
+	
+    <!-- main -->    
+    <string name="main_welcome">Sichere dein Gerät</string>
+    <string name="main_desc">Diese App lokalisiert verlorene oder gestohlene Geräte und kann aus der Ferne die wichtigen und privaten Daten schützen.</string>
+    <string name="main_desc2">Registriere deinen Account hier:\n<a href="http://nowsci.com/odm/">http://nowsci.com/odm/</a></string>
+    <string name="main_internet_required_head">Internet Verbindungsfehler</string>
+    <string name="main_internet_required">Diese App benötigt eine funktionierende Internetverbindung.</string>
+    <string name="main_edit_settings">Einstellungen bearbeiten</string>
+    <string name="main_log_header">Log:</string>
+    
+    <!--  register strings -->
+    <string name="register_devname">Gerätename:</string>
+    <string name="register_serverurl">Server URL:</string>
+    <string name="register_username">Benutzername:</string>
+    <string name="register_password">Passwort:</string>    
+	<string name="register_checkssl">Validiere SSL Zertifikate</string>
+	<string name="register_debug">Debug aktivieren</string>
+	<string name="register_checkversion">Auf neue Versionen prüfen</string>
+	<string name="register_save">Speichern</string>
+	<string name="reg_config_error_head">Konfigurationsfehler!</string>
+	<string name="reg_config_error">Gib die GCM-Sender-ID an</string>
+	<string name="reg_registration_error_head">Registrierungsfehler!</string>
+	<string name="reg_registration_error_enter_details">Bitte alle Felder überprüfen und ausfüllen.</string>
+	<string name="reg_registration_error_wrong_url">Die URL ist ungültig. Richtige Form: http(s)://host.ext/odm</string>
+	<string name="reg_failed_to_register">Registrierung fehlgeschlagen.</string>
+	<string name="reg_attempting_to_register">Versuche Registrierung&#8230;</string>
+	<string name="reg_successful">Registrierung am Server erfolgreich.</string>
+	<string name="reg_unsuccessful">Registrierung am Server fehlgeschlagen, prüfe deine Einstellungen.</string>
+	<string name="reg_reregistered">Registrierung am Server erfolgreich erneuert!</string>
+	
+	<!-- Updater -->
+	<string name="update_available">ODM Update verfügbar. Klicke zum Downloaden.</string>
+	
+	<!-- Admin -->
+	<string name="admin_explanation">ODM benötigt Admin-Berechtigungen zum Sperren und Löschen des Gerätes.</string>
+	<string name="admin_disable_notice">Durch deaktivieren der Admin-Berechtigung wird DSM nicht mehr funktionieren.</string>
+	<string name="admin_required">Open Device Manager benötigt administrative Berechtigungen, aktiviere diese bitte unten.</string>
+	
+	<!-- command responses -->
+	<string name="cres_default_sms">Diese Nummer hat momentan dieses Gerät</string>
+</resources>

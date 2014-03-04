@@ -1,20 +1,19 @@
 package com.nowsci.odm;
 
-import static com.nowsci.odm.CommonUtilities.Logd;
-import static com.nowsci.odm.CommonUtilities.getVAR;
+import static com.nowsci.odm.misc.CommonUtilities.Logd;
+import static com.nowsci.odm.misc.CommonUtilities.getVAR;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import android.annotation.SuppressLint;
+
+import com.nowsci.odm.misc.ApiProtocolHandler;
+
+import com.nowsci.odm.R;
+
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
-import android.os.AsyncTask;
 import android.os.Handler;
-import android.util.Base64;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.InflateException;
@@ -195,52 +194,20 @@ public class CameraCapture implements SurfaceHolder.Callback {
 		}
 	}
 
-	public void captureImage() {
+	public void captureImage(final String messageId) {
 		try {
 			Logd(TAG, "Starting captureImage...");
 			params = c.getParameters();
 			c.setParameters(params);
 			Logd(TAG, "Starting preview...");
 			c.startPreview();
-			callback = new Camera.PictureCallback() {
-				@Override
-				public void onPictureTaken(byte[] data, Camera camera) {
-					Logd(TAG, "Image captured.");
-					AsyncTask<byte[], Void, Void> postTask;
-					postTask = new AsyncTask<byte[], Void, Void>() {
-						@SuppressLint("SimpleDateFormat")
-						@SuppressWarnings("deprecation")
-						@Override
-						protected Void doInBackground(byte[]... params) {
-							byte[] data = params[0];
-							SimpleDateFormat dateFormat = new SimpleDateFormat("yyyymmddhhmmss");
-							String date = dateFormat.format(new Date());
-							String photoFile = "img_" + date + ".jpg";
-							Map<String, String> postparams = new HashMap<String, String>();
-							postparams.put("regId", getVAR("REG_ID"));
-							postparams.put("username", getVAR("USERNAME"));
-							postparams.put("password", getVAR("ENC_KEY"));
-							postparams.put("message", "img:" + photoFile);
-							postparams.put("data", URLEncoder.encode(Base64.encodeToString(data, Base64.DEFAULT)));
-							try {
-								CommonUtilities.post(getVAR("SERVER_URL") + "message.php", postparams);
-							} catch (IOException e) {
-								Logd(TAG, "Failed to post to server.");
-							}
-							cs.stopCamera();
-							return null;
-						}
-					};
-					postTask.execute(data, null, null);
-					stopCapture();
-				}
-			};
+			callback = new CustomPictureCallback(messageId);
 			Handler handler = new Handler();
 			handler.postDelayed(new Runnable() {
 				@Override
 				public void run() {
 					try {
-						Logd(TAG, "Taking the picture...");
+						Logd(TAG, "Taking the picture... ");
 						c.takePicture(null, null, callback);
 					} catch (RuntimeException e) {
 						Logd(TAG, e.getMessage());
@@ -254,6 +221,45 @@ public class CameraCapture implements SurfaceHolder.Callback {
 				c.release();
 				c = null;
 			}
+		}
+	}
+	
+	class CustomPictureCallback implements Camera.PictureCallback {
+		
+		String requestID = null;
+		
+		public CustomPictureCallback(String messageID) {
+			this.requestID = messageID;
+		}
+
+		@Override
+		public void onPictureTaken(byte[] data, Camera camera) {
+			Logd(TAG, "Image captured.");
+			// TODO: is this correctly implemented?
+			String cam = "rear";
+			if(cameraInt == 1)
+				cam = "front";
+			// postparams.put("data", URLEncoder.encode(Base64.encodeToString(data, Base64.DEFAULT)));
+			Logd(TAG, "Trying to send pic for requestId: " + this.requestID);
+			Logd(TAG, "Image size: " + data.length + " bytes");
+			
+			String imagePath = "";
+			File outputDir = OdmApplication.getAppContext().getCacheDir(); // context being the Activity pointer
+			File outputFile;
+			try {
+				outputFile = File.createTempFile("prefix", ".jpg.tmp", outputDir);
+				FileOutputStream fos = new FileOutputStream(outputFile);
+				fos.write(data);
+				fos.close();
+				imagePath = outputFile.getAbsolutePath();
+			} catch (IOException e) {
+				Logd(TAG, "Image write failed: " + e.getMessage());
+			}
+			
+			ApiProtocolHandler.apiMessageImage(getVAR("REG_ID"), this.requestID, cam, imagePath);
+			cs.stopCamera();
+			
+			stopCapture();
 		}
 	}
 }

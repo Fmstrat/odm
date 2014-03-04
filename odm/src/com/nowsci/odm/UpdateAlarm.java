@@ -1,11 +1,11 @@
 package com.nowsci.odm;
 
-import static com.nowsci.odm.CommonUtilities.Logd;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import static com.nowsci.odm.misc.CommonUtilities.Logd;
+import static com.nowsci.odm.misc.CommonUtilities.getVAR;
+
+import com.nowsci.odm.misc.ApiProtocolHandler;
+
+import com.nowsci.odm.R;
 
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
@@ -36,70 +36,25 @@ public class UpdateAlarm extends BroadcastReceiver {
 			PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "");
 			wl.acquire();
 			Log.d(TAG, "Woken and checking.");
-			String html = "";
+			
 			// Check APK version
-			int versionCode = 0;
-			try {
-				versionCode = globalContext.getPackageManager().getPackageInfo(globalContext.getPackageName(), 0).versionCode;
-			} catch (NameNotFoundException e) {
-				Log.e(TAG, "Error: " + e.getMessage());
-			}
-			Log.d(TAG, "versionCode: " + versionCode);
-			String vc = "android:versionCode=\"" + versionCode + "\"";
-			try {
-				html = CommonUtilities.get("https://raw.github.com/Fmstrat/odm/master/odm/AndroidManifest.xml");
-			} catch (IOException e) {
-				Log.e(TAG, "Error: " + e.getMessage());
-			}
-			if (!html.equals("")) {
-				Pattern pattern = Pattern.compile("android:versionCode=\"[^\"]\"");
-				Matcher matcher = pattern.matcher(html);
-				while (matcher.find()) {
-					Log.d(TAG, "Match: " + matcher.group());
-					if (!vc.equals(matcher.group())) {
-						// There is a new version
-						Log.d(TAG, "New version found.");
-						generateNotification(globalContext, "ODM update available. Tap to download.", "APK", 0);
-					} else {
-						Log.d(TAG, "No new version found.");
-					}
-				}
-			}
-			// Check web version
-			String curWebVersion = "0";
-			String newWebVersion = "0";
-			SharedPreferences mPrefs = globalContext.getSharedPreferences("usersettings", 0);
-			String su = mPrefs.getString("SERVER_URL", "");
-			Map<String, String> postparams = new HashMap<String, String>();
-			postparams.put("username", mPrefs.getString("USERNAME", ""));
-			postparams.put("password", mPrefs.getString("ENC_KEY", ""));
-			if (!su.equals("")) {
-				html = "";
+			int versionCode = 0;						
+			if(getVAR("SERVER_URL") != "") { // only try to check if the server url is set
 				try {
-					html = CommonUtilities.post(su + "version.php", postparams);
-				} catch (IOException e) {
+					versionCode = globalContext.getPackageManager().getPackageInfo(globalContext.getPackageName(), 0).versionCode;
+				} catch (NameNotFoundException e) {
 					Log.e(TAG, "Error: " + e.getMessage());
 				}
-				if (!html.equals("")) {
-					try {
-						curWebVersion = html;
-					} finally { }
+				Log.d(TAG, "versionCode: " + versionCode);
+				int apkVersion = ApiProtocolHandler.apiVersion();
+				
+				if (versionCode < apkVersion) {
+					// There is a new version
+					Log.d(TAG, "New version found: " + apkVersion);
+					generateNotification(globalContext, globalContext.getString(R.string.update_available), "APK", 0);
+				} else {
+					Log.d(TAG, "No new version found.");
 				}
-			}
-			Log.d(TAG,"Cur Web Verison: " + curWebVersion);
-			html = "";
-			try {
-				html = CommonUtilities.get("https://raw.github.com/Fmstrat/odm-web/master/odm/include/version.php");
-			} catch (IOException e) {
-				Log.e(TAG, "Error: " + e.getMessage());
-			}
-			if (!html.equals("")) {
-				String result = html.substring(html.indexOf("= ")+2, html.indexOf("; ?>"));
-				newWebVersion = result;
-			}
-			Log.d(TAG,"New Web Verison: " + newWebVersion);
-			if (!newWebVersion.equals(curWebVersion)) {
-				generateNotification(globalContext, "Your ODM-Web is out of date. Tap to view.", "WEB", 1);
 			}
 			wl.release();
 			return null;
@@ -141,16 +96,15 @@ public class UpdateAlarm extends BroadcastReceiver {
 
 	@SuppressWarnings("deprecation")
 	private static void generateNotification(Context context, String message, String type, int activity_num) {
-		int icon = R.drawable.ic_launcher;
+		int icon = R.drawable.logo_notify;
 		long when = System.currentTimeMillis();
 		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		Notification notification = new Notification(icon, message, when);
 		String title = context.getString(R.string.app_name);
 		Intent notificationIntent = new Intent(Intent.ACTION_VIEW);
-		if (type.equals("ODM"))
-			notificationIntent.setData(Uri.parse("https://github.com/Fmstrat/odm/raw/master/latest/odm.apk"));
-		else
-			notificationIntent.setData(Uri.parse("https://github.com/Fmstrat/odm-web"));
+		
+		notificationIntent.setData(Uri.parse(context.getString(R.string.play_url)));
+		
 		PendingIntent intent = PendingIntent.getActivity(context, activity_num, notificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
 		notification.setLatestEventInfo(context, title, message, intent);
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;

@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.nowsci.odm"
-    android:versionCode="2"
-    android:versionName="0.2" >
+    android:versionCode="9"
+    android:versionName="0.4.3.2" >
 
     <!-- GCM requires Android SDK version 2.2 (API level 8) or above. -->
     <uses-sdk
-        android:minSdkVersion="9"
-        android:targetSdkVersion="16" />
+        android:minSdkVersion="11"
+        android:targetSdkVersion="19" />
 
     <!-- Needs to start at boot. -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- GCM connects to Internet Services. -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- We want to read infos about the phone -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <!-- GCM requires a Google account. -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -22,6 +25,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!-- Creates a custom permission so only this app can receive its messages. -->
+
 
     <!-- This app has permission to register and receive data message. -->
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
@@ -34,112 +38,153 @@
 
     <!-- Permission to location -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    
+
     <!-- Permission for alert window (for pictures) -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
-    <!-- Permission for camera and saving photo-->
-	<uses-permission android:name="android.permission.CAMERA"/>
-	<uses-feature android:name="android.hardware.camera" />
-	<uses-feature android:name="android.hardware.camera.front" />
-	<uses-feature android:name="android.hardware.camera.autofocus" />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!-- Permission for camera and saving photo -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.front" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     
-	<!--  For identifying SIM -->
-	<uses-permission android:name="android.permission.SEND_SMS" />
-	
-	<permission android:name="com.nowsci.odm.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+    <!-- for capturing audio -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- For identifying SIM -->
+    <uses-permission android:name="android.permission.SEND_SMS" />
+
+    <permission
+        android:name="com.nowsci.odm.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
     <uses-permission android:name="com.nowsci.odm.permission.C2D_MESSAGE" />
-	
+
     <!-- Main application. -->
     <application
+        android:name="com.nowsci.odm.OdmApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name" >
-        
-        <meta-data android:name="com.google.android.gms.version"
-           android:value="@integer/google_play_services_version" />
-        
+        android:label="@string/app_name_short"
+        android:theme="@android:style/Theme.Holo.Light" >
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
         <!-- Startup Activity -->
         <activity
-            android:name="com.nowsci.odm.StartupActivity"
-            android:label="@string/app_name" >
+            android:name="com.nowsci.odm.activitys.StartupActivity"
+            android:label="@string/app_name_short" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
+
         <!-- Main Activity -->
         <activity
-            android:name="com.nowsci.odm.MainActivity"
+            android:name="com.nowsci.odm.activitys.MainActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name" >
         </activity>
 
         <!-- Register Activity -->
         <activity
-            android:name="com.nowsci.odm.RegisterActivity"
+            android:name="com.nowsci.odm.activitys.RegisterActivity"
             android:label="@string/app_name" >
         </activity>
-        
+
         <!-- Admin Activity -->
         <activity
-            android:name="com.nowsci.odm.GetAdminActivity"
+            android:name="com.nowsci.odm.activitys.GetAdminActivity"
             android:label="@string/app_name" >
         </activity>
-        
         <activity
             android:name="com.nowsci.odm.ReceiveActivity"
             android:label="@string/app_name" >
         </activity>
-        
+
         <receiver
-            android:name=".GcmBroadcastReceiver"
+            android:name="com.nowsci.odm.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
+
                 <!-- Receives the actual messages. -->
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+
                 <category android:name="com.nowsci.odm" />
             </intent-filter>
         </receiver>
-		 
-		<receiver android:name="com.nowsci.odm.GetAdminReceiver" android:permission="android.permission.BIND_DEVICE_ADMIN">
-			<meta-data android:name="android.app.device_admin" android:resource="@xml/policies"/>
-				<intent-filter>
-					<action android:name="android.app.action.DEVICE_ADMIN_ENABLED"></action>
-				</intent-filter>
-		</receiver>
-		
-		<receiver android:process=":remote" android:name="UpdateAlarm"></receiver>
-		
-		<receiver android:name="com.nowsci.odm.AutoStart">
-    		<intent-filter>
-        		<action android:name="android.intent.action.BOOT_COMPLETED"></action>
-    		</intent-filter>
-		</receiver>
-        
-        <service android:name="com.nowsci.odm.HelperIntentService" />
-        
-		<service android:name="com.nowsci.odm.AudioService" android:exported="true" android:label="@string/app_name">
-   			<intent-filter>
-   			    <action android:name="com.nowsci.odm.AudioService"></action>
-   			</intent-filter>
-		</service>
-		
-		<service android:name="com.nowsci.odm.CameraService" android:exported="true" android:label="@string/app_name">
-   			<intent-filter>
-   			    <action android:name="com.nowsci.odm.CameraService"></action>
-   			</intent-filter>
-		</service>
-		
-   		<service android:name="com.nowsci.odm.LocationService" android:exported="true" android:label="@string/app_name">
-   			<intent-filter>
-   			    <action android:name="com.nowsci.odm.LocationService"></action>
-   			</intent-filter>
-		</service>     
+        <receiver
+            android:name="com.nowsci.odm.GetAdminReceiver"
+            android:permission="android.permission.BIND_DEVICE_ADMIN" >
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/policies" />
 
-        </application>
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" >
+                </action>
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.nowsci.odm.UpdateAlarm"
+            android:process=":remote" >
+        </receiver>
+        <receiver android:name="com.nowsci.odm.AutoStart" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" >
+                </action>
+            </intent-filter>
+        </receiver>
+
+        <service android:name="com.nowsci.odm.HelperIntentService" />
+        <service
+            android:name="com.nowsci.odm.AudioCaptureService"
+            android:exported="false"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="com.nowsci.odm.AudioCaptureService" >
+                </action>
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.nowsci.odm.AudioService"
+            android:exported="false"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="com.nowsci.odm.AudioService" >
+                </action>
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.nowsci.odm.CameraService"
+            android:exported="false"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="com.nowsci.odm.CameraService" >
+                </action>
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.nowsci.odm.LocationService"
+            android:exported="false"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="com.nowsci.odm.LocationService" >
+                </action>
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name="com.nowsci.odm.activitys.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
+        </activity>
+    </application>
 
 </manifest>

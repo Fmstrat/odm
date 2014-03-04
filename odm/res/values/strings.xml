@@ -1,5 +1,59 @@
 <resources>
 
     <string name="app_name">Open Device Manager</string>
-
+    <string name="app_name_short">ODM</string>    
+    
+    <!-- misc -->
+    <string name="yes">YES</string>
+	<string name="no">NO</string>
+	<string name="ok">OK</string>
+	<string name="cancel">Cancel</string>
+	<string name="enable">Enable</string>
+	<string name="disable">Disable</string>
+	<string name="toggle">Toggle</string>
+	
+	<!-- configurable values -->
+	<string name="spn_serv_url">http://nowsci.com/odm/</string>
+	<string name="play_url">https://play.google.com/store/apps/details?id=com.nowsci.odm</string>
+	
+    <!-- main -->    
+    <string name="main_welcome">Secure your device</string>
+    <string name="main_desc">This app will locate lost devices associated with your Sprinternet account and help keep your device and data secure by resetting the screen-lock PIN and erasing all data on the phone.</string>
+    <string name="main_desc2">Register for an account here:\n<a href="http://nowsci.com/odm/">http://nowsci.com/odm/</a></string>
+    <string name="main_internet_required_head">Internet Connection Error</string>
+    <string name="main_internet_required">Please connect to working Internet connection</string>
+    <string name="main_edit_settings">Edit settings</string>
+    <string name="main_log_header">Log:</string>
+    
+    <!--  register strings -->
+    <string name="register_devname">Device Name:</string>
+    <string name="register_serverurl">Server URL:</string>
+    <string name="register_username">Username:</string>
+    <string name="register_password">Password:</string>
+    <string name="register_pin">PIN to secure APP:</string>
+	<string name="register_checkssl">Force valid SSL certs</string>
+	<string name="register_debug">Debug to Logcat</string>
+	<string name="register_checkversion">Check for new versions</string>
+	<string name="register_save">Save Settings</string>
+	<string name="reg_config_error_head">Configuration Error!</string>
+	<string name="reg_config_error">Please set your GCM Sender ID</string>
+	<string name="reg_registration_error_head">Registration Error!</string>
+	<string name="reg_registration_error_enter_details">Please enter your details</string>
+	<string name="reg_registration_error_wrong_url">Please enter a valid URL in the form http(s)://host.ext/dir</string>
+	<string name="reg_failed_to_register">Failed to register device.</string>
+	<string name="reg_attempting_to_register">Attempting to register&#8230;</string>
+	<string name="reg_successful">Server successfully registered device.</string>
+	<string name="reg_unsuccessful">Server registration failed, check your settings.</string>
+	<string name="reg_reregistered">Server successfully re-registered device.</string>
+	
+	<!-- Updater -->
+	<string name="update_available">ODM update available. Tap to download.</string>
+	
+	<!-- Admin -->
+	<string name="admin_explanation">ODM requires admin access for locking and wiping the device.</string>
+	<string name="admin_disable_notice">Disabling ODM device administration will keep ODM from functioning.</string>
+	<string name="admin_required">Open Device Manager requires administrative privileges to function. Please enable them below.</string>
+	
+	<!-- command responses -->
+	<string name="cres_default_sms">This number currently has this device</string>
 </resources>

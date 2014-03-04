@@ -2,8 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#ffffff" >
+    android:background="#ffffff"
+    android:orientation="vertical" >
 
     <Button
         android:id="@+id/settingsButton"
@@ -11,13 +11,27 @@
         android:layout_height="wrap_content"
         android:onClick="editSettings"
         android:textColor="#000000"
-        android:text="Edit Settings" />
+        android:text="@string/main_edit_settings" />
+
+    <ImageView
+        android:id="@+id/imageViewStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/main_desc"
+        android:src="@drawable/lock_red" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/main_log_header"
+        android:layout_margin="10dip"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
      
      <TextView android:id="@+id/lblMessage" 
          android:layout_width="fill_parent"
          android:layout_height="wrap_content"
          android:autoLink="all"
-         android:textSize="16dip"
          android:layout_margin="10dip"
          android:textColor="#000000"/>
 

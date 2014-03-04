@@ -1,12 +1,14 @@
 package com.nowsci.odm;
 
+import com.nowsci.odm.R;
+
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.IBinder;
-import static com.nowsci.odm.CommonUtilities.Logd;
+import static com.nowsci.odm.misc.CommonUtilities.Logd;
 
 public class AudioService extends Service {
 	private static final String TAG = "AudioService";

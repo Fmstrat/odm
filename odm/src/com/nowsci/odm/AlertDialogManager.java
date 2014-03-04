@@ -1,5 +1,7 @@
 package com.nowsci.odm;
 
+import com.nowsci.odm.R;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,7 +31,7 @@ public class AlertDialogManager {
 			// Setting alert dialog icon
 			alertDialog.setIcon((status) ? R.drawable.success : R.drawable.fail);
 		// Setting OK Button
-		alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+		alertDialog.setButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 			}

@@ -4,7 +4,8 @@ import android.app.admin.DeviceAdminReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import static com.nowsci.odm.CommonUtilities.Logd;
+import com.nowsci.odm.R;
+import static com.nowsci.odm.misc.CommonUtilities.Logd;
 
 public class GetAdminReceiver extends DeviceAdminReceiver {
 
@@ -25,7 +26,7 @@ public class GetAdminReceiver extends DeviceAdminReceiver {
 
 	@Override
 	public CharSequence onDisableRequested(Context context, Intent intent) {
-		return "Disabling ODM device administration will keep ODM from functioning.";
+		return context.getString(R.string.admin_disable_notice);
 	}
 
 	@Override

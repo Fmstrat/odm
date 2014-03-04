@@ -5,7 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.WakefulBroadcastReceiver;
-import static com.nowsci.odm.CommonUtilities.Logd;
+import static com.nowsci.odm.misc.CommonUtilities.Logd;
 
 public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
 	private static final String TAG = "GcmBroadcastReceiver";
