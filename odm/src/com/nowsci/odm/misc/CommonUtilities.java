@@ -19,7 +19,7 @@ public final class CommonUtilities extends Activity {
 	 * Tag used on log messages.
 	 */
 	static final String TAG = "CommonUtilities";
-	static final String GOOGLE_PROJECT_ID = "297104314774";
+	static final String GOOGLE_PROJECT_ID = "590633583092";
 
 	/**
 	 * Set this to true to enable all input fields and settings

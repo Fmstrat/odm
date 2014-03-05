@@ -11,7 +11,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class MCrypt {
 
-	private String iv = "at.sprinternetiv"; // needs to be 16 bytes
+	private String iv = "com.nowsci.odmiv"; // needs to be 16 bytes
 	private IvParameterSpec ivspec;
 	private SecretKeySpec keyspec;
 	private Cipher cipher;
