@@ -3,6 +3,7 @@ package com.nowsci.odm;
 import static com.nowsci.odm.CommonUtilities.Logd;
 import static com.nowsci.odm.CommonUtilities.getVAR;
 import static com.nowsci.odm.CommonUtilities.setVAR;
+import static com.nowsci.odm.CommonUtilities.loadVARs;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -13,19 +14,20 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
 public class StartupActivity extends Activity {
 
-	private static final String TAG = "StartupActivity";
+	private static final String TAG= "ODMStartupActivity";
 	Boolean version_check = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		/*
 		SharedPreferences mPrefs = getSharedPreferences("usersettings", 0);
 		String su = mPrefs.getString("SERVER_URL", "");
 		setVAR("SERVER_URL", su);
@@ -36,20 +38,23 @@ public class StartupActivity extends Activity {
 		setVAR("VALID_SSL", mPrefs.getString("VALID_SSL", ""));
 		setVAR("DEBUG", mPrefs.getString("DEBUG", ""));
 		setVAR("TOKEN", mPrefs.getString("TOKEN", ""));
+		setVAR("VERSION", mPrefs.getString("VERSION", "true"));
+		setVAR("INTERVAL", mPrefs.getString("INTERVAL", "0"));
+		*/
+		loadVARs(getApplicationContext());
+		String su = getVAR("SERVER_URL");
 		if (getVAR("TOKEN").equals("")) {
 			Log.e(TAG, "TOKEN is blank. You likely need to update the Web application and/or restart the ODM app to re-register.");
 		}
-		// Default to true to start version checks from here out
-		setVAR("VERSION", mPrefs.getString("VERSION", "true"));
 		if (getVAR("VERSION").equals("true"))
 			version_check = true;
 		else
 			version_check = false;
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-		    version_check = extras.getBoolean("VERSION_CHECK", true);
+			version_check = extras.getBoolean("VERSION_CHECK", true);
 		}
-		
+
 		// Eliminate FC's from bad URL in settings for previous users
 		if (!su.equals("")) {
 			Boolean cont = false;
@@ -74,7 +79,18 @@ public class StartupActivity extends Activity {
 		editor.clear();
 		editor.commit();
 		*/
-
+		
+		if (getVAR("HIDE_ICON").equals("false")) {
+			Logd(TAG, "Showing icon");
+			PackageManager p = getPackageManager();
+			ComponentName componentName = new ComponentName("com.nowsci.odm","com.nowsci.odm.IconActivity");
+			p.setComponentEnabledSetting(componentName , PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+		} else {
+			Logd(TAG, "Hiding icon");
+			PackageManager p = getPackageManager();
+			ComponentName componentName = new ComponentName("com.nowsci.odm","com.nowsci.odm.IconActivity");
+			p.setComponentEnabledSetting(componentName , PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+		}
 		Logd(TAG, "Getting admin permissions");
 		DevicePolicyManager mDPM;
 		mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);

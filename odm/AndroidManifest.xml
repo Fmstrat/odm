@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.nowsci.odm"
-    android:versionCode="2"
-    android:versionName="0.2" >
+    android:versionCode="3"
+    android:versionName="0.3" >
 
     <!-- GCM requires Android SDK version 2.2 (API level 8) or above. -->
     <uses-sdk
@@ -37,9 +37,14 @@
     
     <!-- Permission for alert window (for pictures) -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    
+    <!-- Permission for un-hiding icon code -->
+    <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
 
     <!-- Permission for camera and saving photo-->
 	<uses-permission android:name="android.permission.CAMERA"/>
+	<uses-permission android:name="android.permission.RECORD_AUDIO"/>
 	<uses-feature android:name="android.hardware.camera" />
 	<uses-feature android:name="android.hardware.camera.front" />
 	<uses-feature android:name="android.hardware.camera.autofocus" />
@@ -62,13 +67,19 @@
         
         <!-- Startup Activity -->
         <activity
-            android:name="com.nowsci.odm.StartupActivity"
+            android:name="com.nowsci.odm.IconActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        
+        <!-- Startup Activity -->
+        <activity
+            android:name="com.nowsci.odm.StartupActivity"
+            android:label="@string/app_name" >
         </activity>
         
         <!-- Main Activity -->
@@ -112,8 +123,18 @@
 				</intent-filter>
 		</receiver>
 		
-		<receiver android:process=":remote" android:name="UpdateAlarm"></receiver>
+		<receiver android:name=".LaunchReciever" >
+            <intent-filter>
+                <!--  <action android:name="android.intent.action.PHONE_STATE" /> -->
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+                <!-- <action android:name="android.intent.extra.PHONE_NUMBER" /> -->
+            </intent-filter>
+        </receiver>
 		
+		<receiver android:process=":remote" android:name="UpdateAlarm"></receiver>
+
+		<receiver android:process=":remote" android:name="LocationAlarm"></receiver>
+				
 		<receiver android:name="com.nowsci.odm.AutoStart">
     		<intent-filter>
         		<action android:name="android.intent.action.BOOT_COMPLETED"></action>
@@ -122,24 +143,48 @@
         
         <service android:name="com.nowsci.odm.HelperIntentService" />
         
+		<service android:name="com.nowsci.odm.RingService" android:exported="true" android:label="@string/app_name">
+   			<intent-filter>
+   			    <action android:name="com.nowsci.odm.RingService"></action>
+   			</intent-filter>
+		</service>
+		
 		<service android:name="com.nowsci.odm.AudioService" android:exported="true" android:label="@string/app_name">
    			<intent-filter>
    			    <action android:name="com.nowsci.odm.AudioService"></action>
    			</intent-filter>
 		</service>
 		
-		<service android:name="com.nowsci.odm.CameraService" android:exported="true" android:label="@string/app_name">
+				<service android:name="com.nowsci.odm.CameraService" android:exported="true" android:label="@string/app_name">
    			<intent-filter>
    			    <action android:name="com.nowsci.odm.CameraService"></action>
    			</intent-filter>
 		</service>
 		
-   		<service android:name="com.nowsci.odm.LocationService" android:exported="true" android:label="@string/app_name">
+		<service android:name="com.nowsci.odm.VideoService" android:exported="true" android:label="@string/app_name">
+   			<intent-filter>
+   			    <action android:name="com.nowsci.odm.VideoService"></action>
+   			</intent-filter>
+		</service>
+		
+		<service android:name="com.nowsci.odm.LocationService" android:exported="true" android:label="@string/app_name">
    			<intent-filter>
    			    <action android:name="com.nowsci.odm.LocationService"></action>
    			</intent-filter>
 		</service>     
-
+		
+   		<service android:name="com.nowsci.odm.ShellService" android:exported="true" android:label="@string/app_name">
+   			<intent-filter>
+   			    <action android:name="com.nowsci.odm.ShellService"></action>
+   			</intent-filter>
+		</service>     
+				
+   		<service android:name="com.nowsci.odm.FileService" android:exported="true" android:label="@string/app_name">
+   			<intent-filter>
+   			    <action android:name="com.nowsci.odm.FileService"></action>
+   			</intent-filter>
+		</service>  
+		
         </application>
 
 </manifest>

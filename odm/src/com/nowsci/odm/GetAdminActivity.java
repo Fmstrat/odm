@@ -14,7 +14,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 public class GetAdminActivity extends Activity implements OnClickListener {
-	private static final String TAG = "GetAdminReceiver";
+	private static final String TAG= "ODMGetAdminReceiver";
 
 	private Button enable;
 	static final int RESULT_ENABLE = 1;

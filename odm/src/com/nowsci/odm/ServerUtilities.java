@@ -14,7 +14,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 public final class ServerUtilities {
-	private static final String TAG = "ServerUtilities";
+	private static final String TAG= "ODMServerUtilities";
 
 	/**
 	 * Register this account/device pair within the server.
@@ -34,25 +34,19 @@ public final class ServerUtilities {
 				postparams.put("name", getVAR("NAME"));
 				postparams.put("username", getVAR("USERNAME"));
 				postparams.put("password", getVAR("ENC_KEY"));
-				try {
-					displayMessage(context, "Attempting to register...");
-					String html = CommonUtilities.post(serverUrl, postparams);
-					if (html.startsWith("success:")) {
-						String token = html.replaceFirst("success:", "");
-						setVAR("TOKEN", token);
-						SharedPreferences mPrefs = context.getSharedPreferences("usersettings", 0);
-						SharedPreferences.Editor mEditor = mPrefs.edit();
-						mEditor.putString("TOKEN", token).commit();
-						displayMessage(context, "Server successfully registered device.");
-					} else {
-						displayMessage(context, "Server registration failed, check your settings.");
-						Logd(TAG, "Server registration failed with: " + html);
-					}
-					return null;
-				} catch (IOException e) {
-					Log.e(TAG, "Failed to register: " + e);
+				displayMessage(context, "Attempting to register...");
+				String html = CommonUtilities.post(serverUrl, postparams);
+				if (html.startsWith("success:")) {
+					String token = html.replaceFirst("success:", "");
+					setVAR("TOKEN", token);
+					SharedPreferences mPrefs = context.getSharedPreferences("usersettings", 0);
+					SharedPreferences.Editor mEditor = mPrefs.edit();
+					mEditor.putString("TOKEN", token).commit();
+					displayMessage(context, "Server successfully registered device.");
+				} else {
+					displayMessage(context, "Server registration failed, check your settings.");
+					Logd(TAG, "Server registration failed with: " + html);
 				}
-				displayMessage(context, "Failed to register device.");
 				return null;
 			}
 		};

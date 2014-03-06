@@ -10,6 +10,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,7 +20,7 @@ import android.widget.ToggleButton;
 
 public class RegisterActivity extends Activity {
 
-	private static final String TAG = "RegisterActivity";
+	private static final String TAG= "ODMRegisterActivity";
 
 	// alert dialog manager
 	AlertDialogManager alert = new AlertDialogManager();
@@ -29,10 +31,13 @@ public class RegisterActivity extends Activity {
 	EditText txtServerUrl;
 	EditText txtUsername;
 	EditText txtEncKey;
+	ToggleButton tglHideIcon;
 	ToggleButton tglValidSSL;
 	ToggleButton tglDebug;
 	ToggleButton tglVersion;
+	ToggleButton tglNetworkOnly;
 	Button btnRegister;
+	EditText txtInterval;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -50,9 +55,12 @@ public class RegisterActivity extends Activity {
 		txtServerUrl = (EditText) findViewById(R.id.txtServerUrl);
 		txtUsername = (EditText) findViewById(R.id.txtUsername);
 		txtEncKey = (EditText) findViewById(R.id.txtEncKey);
+		tglHideIcon = (ToggleButton) findViewById(R.id.tglHideIcon);
 		tglValidSSL = (ToggleButton) findViewById(R.id.tglValidSSL);
 		tglDebug = (ToggleButton) findViewById(R.id.tglDebug);
 		tglVersion = (ToggleButton) findViewById(R.id.tglVersion);
+		tglNetworkOnly = (ToggleButton) findViewById(R.id.tglNetworkOnly);
+		txtInterval = (EditText) findViewById(R.id.txtInterval);
 		btnRegister = (Button) findViewById(R.id.btnRegister);
 		txtName.setText(getVAR("NAME"));
 		String su = getVAR("SERVER_URL");
@@ -64,6 +72,10 @@ public class RegisterActivity extends Activity {
 		txtServerUrl.setText(s);
 		txtUsername.setText(getVAR("USERNAME"));
 		txtEncKey.setText(getVAR("ENC_KEY"));
+		if (getVAR("HIDE_ICON").equals("true"))
+			tglHideIcon.setChecked(true);
+		else
+			tglHideIcon.setChecked(false);
 		if (!getVAR("VALID_SSL").equals("false"))
 			tglValidSSL.setChecked(true);
 		else
@@ -76,7 +88,32 @@ public class RegisterActivity extends Activity {
 			tglVersion.setChecked(true);
 		else
 			tglVersion.setChecked(false);
+		if (getVAR("NETWORK_ONLY").equals("true"))
+			tglNetworkOnly.setChecked(true);
+		else
+			tglNetworkOnly.setChecked(false);
+		txtInterval.setText(getVAR("INTERVAL"));
+		if (getVAR("INTERVAL").equals("0"))
+			tglNetworkOnly.setEnabled(false);
+		txtInterval.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void afterTextChanged(Editable s) {
+				if (s.toString().equals("0") || s.toString().equals("")) {
+					tglNetworkOnly.setEnabled(false);
+				} else {
+					tglNetworkOnly.setEnabled(true);
+				}
+			}
 
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+			}
+		});
 		// These lines are for debugging only.
 		// NOTE: FORDEVEL
 		/*
@@ -107,6 +144,12 @@ public class RegisterActivity extends Activity {
 				String validssl = "";
 				String debug = "";
 				String version = "";
+				String hideicon = "";
+				String networkonly = "";
+				if (tglHideIcon.isChecked())
+					hideicon = "true";
+				else
+					hideicon = "false";
 				if (tglValidSSL.isChecked())
 					validssl = "true";
 				else
@@ -119,6 +162,14 @@ public class RegisterActivity extends Activity {
 					version = "true";
 				else
 					version = "false";
+				if (tglNetworkOnly.isChecked())
+					networkonly = "true";
+				else
+					networkonly = "false";
+				String interval = txtInterval.getText().toString();
+				if (interval.equals("")) {
+					interval = "0";
+				}
 				Boolean cont = false;
 				try {
 					URL u = new URL(serverurl);
@@ -131,7 +182,7 @@ public class RegisterActivity extends Activity {
 				}
 				if (cont) {
 					// Check if user filled the form
-					if (name.trim().length() > 0 && serverurl.trim().length() > 0 && username.trim().length() > 0 && enckey.trim().length() > 0) {
+					if (interval.trim().length() > 0 && name.trim().length() > 0 && serverurl.trim().length() > 0 && username.trim().length() > 0 && enckey.trim().length() > 0) {
 						// Launch Main Activity to register user on server and send registration details
 						SharedPreferences mPrefs = getSharedPreferences("usersettings", 0);
 						SharedPreferences.Editor mEditor = mPrefs.edit();
@@ -146,8 +197,11 @@ public class RegisterActivity extends Activity {
 						mEditor.putString("VALID_SSL", validssl).commit();
 						mEditor.putString("DEBUG", debug).commit();
 						mEditor.putString("ENC_KEY", enckey).commit();
+						mEditor.putString("HIDE_ICON", hideicon).commit();
 						mEditor.putString("NAME", name).commit();
 						mEditor.putString("VERSION", version).commit();
+						mEditor.putString("INTERVAL", interval).commit();
+						mEditor.putString("NETWORK_ONLY", networkonly).commit();
 						Intent intent = new Intent(getApplicationContext(), StartupActivity.class);
 						intent.putExtra("VERSION_CHECK", false);
 						startActivity(intent);
@@ -157,7 +211,7 @@ public class RegisterActivity extends Activity {
 						alert.showAlertDialog(RegisterActivity.this, "Registration Error!", "Please enter your details", false);
 					}
 				} else {
-					alert.showAlertDialog(RegisterActivity.this, "Registration Error!", "Please enter a valid URL in the form http(s)://host.ext/dir", false);				
+					alert.showAlertDialog(RegisterActivity.this, "Registration Error!", "Please enter a valid URL in the form http(s)://host.ext/dir", false);
 				}
 			}
 		});

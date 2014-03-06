@@ -2,11 +2,11 @@ package com.nowsci.odm;
 
 import static com.nowsci.odm.CommonUtilities.Logd;
 import static com.nowsci.odm.CommonUtilities.getVAR;
+import static com.nowsci.odm.CommonUtilities.loadVARs;
 
 import java.io.IOException;
 import java.util.Date;
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +22,7 @@ import android.widget.TextView;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 public class MainActivity extends Activity {
-	private static final String TAG = "MainActivity";
+	private static final String TAG= "ODMMainActivity";
 	// Label to display GCM messages
 	TextView lblMessage;
 	// Alert dialog manager
@@ -33,12 +33,17 @@ public class MainActivity extends Activity {
 	Context context;
 	String regId;
 	Boolean version_check = false;
+	String interval = "0";
+	String version = "false";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		context = getApplicationContext();
+		loadVARs(context);
+		version = getVAR("VERSION");
+		interval = getVAR("INTERVAL");
 		cd = new ConnectionDetector(context);
 		// Check if Internet present
 		if (!cd.isConnectingToInternet()) {
@@ -53,7 +58,7 @@ public class MainActivity extends Activity {
 		registerReceiver(mHandleMessageReceiver, new IntentFilter("com.nowsci.odm.DISPLAY_MESSAGE"));
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-		    version_check = extras.getBoolean("VERSION_CHECK", false);
+			version_check = extras.getBoolean("VERSION_CHECK", false);
 		}
 		Logd(TAG, "Starting registration procedure.");
 		new RegisterBackground().execute();
@@ -65,7 +70,7 @@ public class MainActivity extends Activity {
 		unregisterReceiver(mHandleMessageReceiver);
 		super.onDestroy();
 	}
-	
+
 	public void editSettings(View view) {
 		Intent i = new Intent(getApplicationContext(), RegisterActivity.class);
 		startActivity(i);
@@ -76,13 +81,26 @@ public class MainActivity extends Activity {
 
 		@Override
 		protected String doInBackground(String... arg0) {
-			boolean alarmUp = (PendingIntent.getBroadcast(context, 0, new Intent("com.nowsci.odm:remote"), PendingIntent.FLAG_NO_CREATE) != null);
-			if (!alarmUp) {
-				Logd(TAG, "Starting alarm.");
-				UpdateAlarm updateAlarm = new UpdateAlarm();
+			Logd(TAG, "Checking update alarm.");
+			UpdateAlarm updateAlarm = new UpdateAlarm();
+			updateAlarm.SetAlarmContext(context);
+			if (version.equals("true")) {
+				Logd(TAG, "Good to start update alarm.");
 				updateAlarm.SetAlarm(context);
 			} else {
-				Logd(TAG, "Alarm already running.");
+				Logd(TAG, "Shutting down update alarm.");
+				updateAlarm.CancelAlarm(context);
+			}
+			Logd(TAG, "Checking location alarm.");
+			LocationAlarm locationAlarm = new LocationAlarm();
+			locationAlarm.SetAlarmContext(context);
+			locationAlarm.SetInterval(interval);
+			if (!interval.equals("0")) {
+				Logd(TAG, "Good to start location alarm.");
+				locationAlarm.SetAlarm(context);
+			} else {
+				Logd(TAG, "Shutting down location alarm.");
+				locationAlarm.CancelAlarm(context);
 			}
 			try {
 				Logd(TAG, "Checking if GCM is null.");

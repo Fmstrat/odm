@@ -1,8 +1,12 @@
 package com.nowsci.odm;
 
 import static com.nowsci.odm.CommonUtilities.Logd;
+import static com.nowsci.odm.CommonUtilities.checkStorageDir;
 import static com.nowsci.odm.CommonUtilities.getVAR;
 
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -11,25 +15,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.nowsci.odm.FileService.SendFileBackground;
+
 import android.annotation.SuppressLint;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.Size;
+import android.media.CamcorderProfile;
+import android.media.MediaRecorder;
 import android.os.AsyncTask;
+import android.os.Environment;
+import android.os.FileObserver;
 import android.os.Handler;
 import android.util.Base64;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.InflateException;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 
-public class CameraCapture implements SurfaceHolder.Callback {
-	public CameraService cs;
+public class VideoCapture implements SurfaceHolder.Callback {
+	public VideoService vs;
 	public View v;
 	SurfaceHolder sh;
 	SurfaceHolder sh_created;
@@ -39,15 +50,19 @@ public class CameraCapture implements SurfaceHolder.Callback {
 	Camera.PictureCallback mCall;
 	Camera.Parameters params;
 	Camera.PictureCallback callback;
+	MediaRecorder mr;
 	Display display;
 	Boolean max = false;
 	Boolean focused = false;
 	int focusTimeout = 10; // in seconds
 	long focusStart = 0;
+	String vidFilePath = "";
+	String vidFile = "";
+	int seconds = 15;
 
-	private static final String TAG= "ODMCameraCapture";
+	private static final String TAG= "ODMVideoCapture";
 
-	public CameraCapture() {
+	public VideoCapture() {
 	}
 
 	@Override
@@ -68,6 +83,13 @@ public class CameraCapture implements SurfaceHolder.Callback {
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
+		Logd(TAG, "Surface removed.");
+		if (mr != null) {
+			mr.stop();
+			mr.reset();
+			mr.release();
+			mr = null;
+		}
 		if (this.c != null) {
 			this.c.stopPreview();
 			this.c.release();
@@ -79,6 +101,10 @@ public class CameraCapture implements SurfaceHolder.Callback {
 		max = m;
 	}
 
+	public void setSeconds(Integer s) {
+		seconds = s;
+	}
+
 	public void setCamera(int inCameraInt) {
 		cameraInt = inCameraInt;
 	}
@@ -87,23 +113,23 @@ public class CameraCapture implements SurfaceHolder.Callback {
 		display = inDisplay;
 	}
 
-	public void setServiceContainer(CameraService inCameraService) {
-		cs = inCameraService;
+	public void setServiceContainer(VideoService inVideoService) {
+		vs = inVideoService;
 	}
 
 	public void startWindowManager() {
 		Logd(TAG, "Starting up the window manager...");
 		if (v != null) {
-			((WindowManager) cs.getSystemService("window")).removeView(v);
+			((WindowManager) vs.getSystemService("window")).removeView(v);
 			v = null;
 		}
-		WindowManager wm = (WindowManager) cs.getSystemService("window");
+		WindowManager wm = (WindowManager) vs.getSystemService("window");
 		WindowManager.LayoutParams lp = new WindowManager.LayoutParams(1, 1, WindowManager.LayoutParams.TYPE_PRIORITY_PHONE, WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, PixelFormat.TRANSLUCENT); //width, height, _type (2007), _flags (32), _format (-3)
 		lp.y = 0;
 		lp.x = 0;
 		lp.gravity = Gravity.LEFT;
 		try {
-			v = ((LayoutInflater) cs.getSystemService("layout_inflater")).inflate(R.layout.camera, null);
+			v = ((LayoutInflater) vs.getSystemService("layout_inflater")).inflate(R.layout.camera, null);
 		} catch (InflateException e) {
 			Logd(TAG, "Error: " + e.getLocalizedMessage());
 		}
@@ -116,19 +142,31 @@ public class CameraCapture implements SurfaceHolder.Callback {
 
 	public void stopCapture() {
 		Logd(TAG, "Stopping capture.");
+		if (mr != null) {
+			mr.stop();
+			mr.reset();
+			mr.release();
+			mr = null;
+		}
 		if (c != null) {
 			c.stopPreview();
 			c.release();
 			c = null;
 		}
 		if (v != null) {
-			((WindowManager) this.cs.getSystemService("window")).removeView(v);
+			((WindowManager) this.vs.getSystemService("window")).removeView(v);
 			v = null;
 		}
 	}
-
+	
 	void startPreview() {
 		Logd(TAG, "Starting CC preview...");
+		if (mr != null) {
+			mr.stop();
+			mr.reset();
+			mr.release();
+			mr = null;
+		}
 		if (c != null) {
 			c.stopPreview();
 			c.release();
@@ -145,57 +183,8 @@ public class CameraCapture implements SurfaceHolder.Callback {
 		}
 		while (true) {
 			try {
-				// TODO Handle orientation and resolution.
-				// Two versions of code below exist, but neither work properly.
+				// TODO Include resolution selection for video
 				/*
-				params = c.getParameters();
-				Logd(TAG, "Orientation: " + cs.getResources().getConfiguration().orientation);
-				if (cs.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-					Logd(TAG, "Setting orientation to portrait.");
-					params.set("orientation", "portrait");
-					if (cameraInt == 1)
-						params.set("rotation", 270);
-					else {
-						params.set("rotation", 90);
-					}
-				} else if (cs.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-					Logd(TAG, "Setting orientation to landscape.");
-					params.set("orientation", "landscape");
-					//params.set("rotation", 90);
-				}
-				c.setParameters(params);
-				*/
-				/*
-				Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
-				Camera.getCameraInfo(cameraInt, info);
-				int rotation = display.getRotation();
-				Logd(TAG, "Camera rotation: " + rotation);
-				int degrees = 0;
-				switch (rotation) {
-				case Surface.ROTATION_0:
-					degrees = 0;
-					break;
-				case Surface.ROTATION_90:
-					degrees = 90;
-					break;
-				case Surface.ROTATION_180:
-					degrees = 180;
-					break;
-				case Surface.ROTATION_270:
-					degrees = 270;
-					break;
-				}
-				Logd(TAG, "Camera compensation degrees: " + degrees);
-				int result;
-				if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-					result = (info.orientation + degrees) % 360;
-					result = (360 - result) % 360; // compensate the mirror
-				} else { // back-facing
-					result = (info.orientation - degrees + 360) % 360;
-				}
-				Logd(TAG, "Camera compensation result: " + result);
-				c.setDisplayOrientation(result);
-				*/
 				if (max) {
 					params = c.getParameters();
 					List<Size> sl = params.getSupportedPictureSizes();
@@ -210,6 +199,7 @@ public class CameraCapture implements SurfaceHolder.Callback {
 					params.setPictureSize(w, h);
 					c.setParameters(params);
 				}
+				*/
 				c.setPreviewDisplay(sh_created);
 				c.startPreview();
 				return;
@@ -221,6 +211,15 @@ public class CameraCapture implements SurfaceHolder.Callback {
 		}
 	}
 	
+	public String setFilePath() {
+        checkStorageDir();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyymmddhhmmss");
+		String date = dateFormat.format(new Date());
+		vidFile = "vid_" + date + ".mp4";
+		vidFilePath = Environment.getExternalStorageDirectory() + "/Android/data/com.nowsci.odm/.storage/" + vidFile;
+		return vidFilePath;
+	}
+	
 	public void waitForFocus() {
 		Handler handler = new Handler();
 		handler.postDelayed(new Runnable() {
@@ -229,9 +228,56 @@ public class CameraCapture implements SurfaceHolder.Callback {
 				long curTime = System.currentTimeMillis();
 				if (focused == true || (curTime - focusStart >= (focusTimeout*1000))) { 
 					try {
-						Logd(TAG, "Taking picture...");
-						c.takePicture(null, null, callback);
+						Logd(TAG, "Taking video...");
+						//c.takePicture(null, null, callback);
+						mr = new MediaRecorder();
+						c.unlock();
+						mr.setCamera(c);
+						mr.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+						mr.setVideoSource(MediaRecorder.VideoSource.DEFAULT);
+						mr.setPreviewDisplay(null);
+						CamcorderProfile cpHigh = null;
+						if (max)
+							cpHigh = CamcorderProfile.get(cameraInt, CamcorderProfile.QUALITY_HIGH);
+						else
+							cpHigh = CamcorderProfile.get(cameraInt, CamcorderProfile.QUALITY_LOW);
+				        mr.setProfile(cpHigh);
+				        mr.setOutputFile(vidFilePath);
+				        File outFile = new File(vidFilePath);
+				        if (outFile.exists()) {
+				            outFile.delete();
+				        }
+				        mr.setMaxDuration(seconds * 1000);
+				        mr.prepare();
+				        //mr.addCallback();
+						Handler handler = new Handler();
+						handler.postDelayed(new Runnable() {
+							@Override
+							public void run() {
+								try {
+									Logd(TAG, "Starting video...");
+									mr.start();
+								} catch (RuntimeException e) {
+									Logd(TAG, e.getMessage());
+								}
+							}
+						}, 2000);
+						handler = new Handler();
+						handler.postDelayed(new Runnable() {
+							@Override
+							public void run() {
+								try {
+									Logd(TAG, "Stopping capture...");
+									stopCapture();
+									vs.stopCamera();
+								} catch (RuntimeException e) {
+									Logd(TAG, e.getMessage());
+								}
+							}
+						}, 2000+(seconds*1000));
 					} catch (RuntimeException e) {
+						Logd(TAG, e.getMessage());
+					} catch (IOException e) {
 						Logd(TAG, e.getMessage());
 					}
 				} else {
@@ -241,43 +287,14 @@ public class CameraCapture implements SurfaceHolder.Callback {
 		}, 2000);
 	}
 
-	public void captureImage() {
+	
+	public void captureVideo() {
 		try {
-			Logd(TAG, "Starting captureImage...");
+			Logd(TAG, "Starting captureVideo...");
 			params = c.getParameters();
 			c.setParameters(params);
 			Logd(TAG, "Starting preview...");
 			c.startPreview();
-			callback = new Camera.PictureCallback() {
-				@Override
-				public void onPictureTaken(byte[] data, Camera camera) {
-					Logd(TAG, "Image captured.");
-					AsyncTask<byte[], Void, Void> postTask;
-					postTask = new AsyncTask<byte[], Void, Void>() {
-						@SuppressLint("SimpleDateFormat")
-						@SuppressWarnings("deprecation")
-						@Override
-						protected Void doInBackground(byte[]... params) {
-							byte[] data = params[0];
-							SimpleDateFormat dateFormat = new SimpleDateFormat("yyyymmddhhmmss");
-							String date = dateFormat.format(new Date());
-							String photoFile = "img_" + date + ".jpg";
-							Map<String, String> postparams = new HashMap<String, String>();
-							postparams.put("regId", getVAR("REG_ID"));
-							postparams.put("username", getVAR("USERNAME"));
-							postparams.put("password", getVAR("ENC_KEY"));
-							postparams.put("message", "img:" + photoFile);
-							//postparams.put("data", URLEncoder.encode(Base64.encodeToString(data, Base64.DEFAULT)));
-							//CommonUtilities.post(getVAR("SERVER_URL") + "message.php", postparams);
-							CommonUtilities.post(getVAR("SERVER_URL") + "file.php", postparams, data);
-							cs.stopCamera();
-							return null;
-						}
-					};
-					postTask.execute(data, null, null);
-					stopCapture();
-				}
-			};
 			final AutoFocusCallback afc = new AutoFocusCallback() {
 				@Override
 				public void onAutoFocus(boolean success, Camera camera) {

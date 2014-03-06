@@ -8,7 +8,7 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 import static com.nowsci.odm.CommonUtilities.Logd;
 
 public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
-	private static final String TAG = "GcmBroadcastReceiver";
+	private static final String TAG= "ODMGcmBroadcastReceiver";
 
 	@Override
 	public void onReceive(Context context, Intent intent) {

@@ -8,7 +8,7 @@ import static com.nowsci.odm.CommonUtilities.Logd;
 
 public class GetAdminReceiver extends DeviceAdminReceiver {
 
-	private static final String TAG = "GetAdminReceiver";
+	private static final String TAG= "ODMGetAdminReceiver";
 
 	static SharedPreferences getSamplePreferences(Context context) {
 		return context.getSharedPreferences(DeviceAdminReceiver.class.getName(), 0);

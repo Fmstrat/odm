@@ -1,7 +1,11 @@
 package com.nowsci.odm;
 
 import static com.nowsci.odm.CommonUtilities.Logd;
+import static com.nowsci.odm.CommonUtilities.getVAR;
+import static com.nowsci.odm.CommonUtilities.loadVARs;
+
 import java.io.IOException;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -15,7 +19,6 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -23,8 +26,9 @@ import android.os.PowerManager;
 import android.util.Log;
 
 public class UpdateAlarm extends BroadcastReceiver {
-	private static final String TAG = "UpdateAlarm";
+	private static final String TAG= "ODMUpdateAlarm";
 	Boolean version_check = false;
+	Context alarmContext;
 	Context globalContext;
 
 	class BackgroundUpdate extends AsyncTask<String, String, String> {
@@ -32,10 +36,11 @@ public class UpdateAlarm extends BroadcastReceiver {
 		@SuppressLint("Wakelock")
 		@Override
 		protected String doInBackground(String... arg0) {
+			loadVARs(globalContext);
 			PowerManager pm = (PowerManager) globalContext.getSystemService(Context.POWER_SERVICE);
 			PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "");
 			wl.acquire();
-			Log.d(TAG, "Woken and checking.");
+			Logd(TAG, "Woken and checking.");
 			String html = "";
 			// Check APK version
 			int versionCode = 0;
@@ -44,7 +49,7 @@ public class UpdateAlarm extends BroadcastReceiver {
 			} catch (NameNotFoundException e) {
 				Log.e(TAG, "Error: " + e.getMessage());
 			}
-			Log.d(TAG, "versionCode: " + versionCode);
+			Logd(TAG, "versionCode: " + versionCode);
 			String vc = "android:versionCode=\"" + versionCode + "\"";
 			try {
 				html = CommonUtilities.get("https://raw.github.com/Fmstrat/odm/master/odm/AndroidManifest.xml");
@@ -55,38 +60,34 @@ public class UpdateAlarm extends BroadcastReceiver {
 				Pattern pattern = Pattern.compile("android:versionCode=\"[^\"]\"");
 				Matcher matcher = pattern.matcher(html);
 				while (matcher.find()) {
-					Log.d(TAG, "Match: " + matcher.group());
+					Logd(TAG, "Match: " + matcher.group());
 					if (!vc.equals(matcher.group())) {
 						// There is a new version
-						Log.d(TAG, "New version found.");
+						Logd(TAG, "New version found.");
 						generateNotification(globalContext, "ODM update available. Tap to download.", "APK", 0);
 					} else {
-						Log.d(TAG, "No new version found.");
+						Logd(TAG, "No new version found.");
 					}
 				}
 			}
 			// Check web version
 			String curWebVersion = "0";
 			String newWebVersion = "0";
-			SharedPreferences mPrefs = globalContext.getSharedPreferences("usersettings", 0);
-			String su = mPrefs.getString("SERVER_URL", "");
+			String su = getVAR("SERVER_URL");
 			Map<String, String> postparams = new HashMap<String, String>();
-			postparams.put("username", mPrefs.getString("USERNAME", ""));
-			postparams.put("password", mPrefs.getString("ENC_KEY", ""));
+			postparams.put("username", getVAR("USERNAME"));
+			postparams.put("password", getVAR("ENC_KEY"));
 			if (!su.equals("")) {
 				html = "";
-				try {
-					html = CommonUtilities.post(su + "version.php", postparams);
-				} catch (IOException e) {
-					Log.e(TAG, "Error: " + e.getMessage());
-				}
+				html = CommonUtilities.post(su + "version.php", postparams);
 				if (!html.equals("")) {
 					try {
 						curWebVersion = html;
-					} finally { }
+					} finally {
+					}
 				}
 			}
-			Log.d(TAG,"Cur Web Verison: " + curWebVersion);
+			Logd(TAG, "Cur Web Verison: " + curWebVersion);
 			html = "";
 			try {
 				html = CommonUtilities.get("https://raw.github.com/Fmstrat/odm-web/master/odm/include/version.php");
@@ -94,10 +95,10 @@ public class UpdateAlarm extends BroadcastReceiver {
 				Log.e(TAG, "Error: " + e.getMessage());
 			}
 			if (!html.equals("")) {
-				String result = html.substring(html.indexOf("= ")+2, html.indexOf("; ?>"));
+				String result = html.substring(html.indexOf("= ") + 2, html.indexOf("; ?>"));
 				newWebVersion = result;
 			}
-			Log.d(TAG,"New Web Verison: " + newWebVersion);
+			Logd(TAG, "New Web Verison: " + newWebVersion);
 			if (!newWebVersion.equals(curWebVersion)) {
 				generateNotification(globalContext, "Your ODM-Web is out of date. Tap to view.", "WEB", 1);
 			}
@@ -109,34 +110,37 @@ public class UpdateAlarm extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		globalContext = context;
-		Log.d(TAG, "Running update alarm.");
-		SharedPreferences mPrefs = context.getSharedPreferences("usersettings", 0);
-		if (mPrefs.getString("VERSION", "true").equals("true"))
-			version_check = true;
-		else
-			version_check = false;
-		Log.d(TAG, "Check for new version: " + version_check);
-		if (version_check) {
+		loadVARs(globalContext);
+		Logd(TAG, "Running update alarm.");
+		ConnectionDetector cd = new ConnectionDetector(context);
+		// Check if Internet present
+		if (cd.isConnectingToInternet())
 			new BackgroundUpdate().execute();
-		}
+	}
+
+	public void SetAlarmContext(Context context) {
+		alarmContext = context;
 	}
 
 	public void SetAlarm(Context context) {
+		alarmContext = context;
+		loadVARs(alarmContext);
 		Logd(TAG, "Setting update alarm.");
-		CancelAlarm(context);
+		CancelAlarm(alarmContext);
+		Long time = new GregorianCalendar().getTimeInMillis() + 1000 * 60 * 60 * 24 * 7;
 		AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-		Intent i = new Intent(context, UpdateAlarm.class);
-		PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, Intent.FILL_IN_DATA);
-		am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 60 * 60 * 24 * 7, pi); // Millisec * Second * Minute * Hour * Days
-		//am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 30, pi); // Millisec * Second * Minute * Hour * Days
+		Intent i = new Intent(alarmContext, UpdateAlarm.class);
+		PendingIntent pi = PendingIntent.getBroadcast(alarmContext, 98, i, PendingIntent.FLAG_UPDATE_CURRENT);
+		am.setRepeating(AlarmManager.RTC_WAKEUP, time, 1000 * 60 * 60 * 24 * 7, pi); // Millisec * Second * Minute * Hour * Days
+		//am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+1000*60, 1000 * 60, pi); // Millisec * Second * Minute * Hour * Days
 	}
 
 	public void CancelAlarm(Context context) {
 		Logd(TAG, "Unsetting update alarm.");
-		Intent intent = new Intent(context, UpdateAlarm.class);
-		PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, 0);
-		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-		alarmManager.cancel(sender);
+		Intent i = new Intent(alarmContext, UpdateAlarm.class);
+		PendingIntent pi = PendingIntent.getBroadcast(alarmContext, 98, i, PendingIntent.FLAG_UPDATE_CURRENT);
+		AlarmManager alarmManager = (AlarmManager) alarmContext.getSystemService(Context.ALARM_SERVICE);
+		alarmManager.cancel(pi);
 	}
 
 	@SuppressWarnings("deprecation")

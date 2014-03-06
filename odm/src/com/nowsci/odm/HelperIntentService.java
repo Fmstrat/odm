@@ -1,8 +1,8 @@
 package com.nowsci.odm;
 
 import static com.nowsci.odm.CommonUtilities.Logd;
-import static com.nowsci.odm.CommonUtilities.setVAR;
 import static com.nowsci.odm.CommonUtilities.getVAR;
+import static com.nowsci.odm.CommonUtilities.loadVARs;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import android.app.IntentService;
@@ -13,14 +13,13 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.telephony.SmsManager;
 import android.util.Log;
 
 public class HelperIntentService extends IntentService {
-	private static final String TAG = "HelperIntentService";
+	private static final String TAG= "ODMHelperIntentService";
 	Context context;
 
 	public HelperIntentService() {
@@ -42,6 +41,7 @@ public class HelperIntentService extends IntentService {
 			} else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 				// If it's a regular GCM message, do some work.
 				try {
+					/*
 					SharedPreferences mPrefs = getSharedPreferences("usersettings", 0);
 					setVAR("SERVER_URL", mPrefs.getString("SERVER_URL", ""));
 					setVAR("NAME", mPrefs.getString("NAME", ""));
@@ -51,10 +51,13 @@ public class HelperIntentService extends IntentService {
 					setVAR("VALID_SSL", mPrefs.getString("VALID_SSL", ""));
 					setVAR("DEBUG", mPrefs.getString("DEBUG", ""));
 					setVAR("TOKEN", mPrefs.getString("TOKEN", ""));
+					setVAR("VERSION", mPrefs.getString("VERSION", ""));
+					setVAR("INTERVAL", mPrefs.getString("INTERVAL", "0"));
+					*/
+					loadVARs(getApplicationContext());
 					if (getVAR("TOKEN").equals("")) {
 						Log.e(TAG, "TOKEN is blank. You likely need to update the Web application and/or restart the ODM app to re-register.");
 					}
-					setVAR("VERSION", mPrefs.getString("VERSION", ""));
 					MCrypt mcrypt = new MCrypt();
 					String decrypted = new String(mcrypt.decrypt(msg));
 					Logd(TAG, "Received message: " + decrypted);
@@ -103,27 +106,45 @@ public class HelperIntentService extends IntentService {
 			mDeviceAdmin = new ComponentName(context, GetAdminReceiver.class);
 			if (mDPM.isAdminActive(mDeviceAdmin)) {
 				Logd(TAG, "Locking device with password");
-				mDPM.setPasswordQuality(mDeviceAdmin,DevicePolicyManager.PASSWORD_QUALITY_UNSPECIFIED);
+				mDPM.setPasswordQuality(mDeviceAdmin, DevicePolicyManager.PASSWORD_QUALITY_UNSPECIFIED);
 				mDPM.setPasswordMinimumLength(mDeviceAdmin, 4);
 				mDPM.resetPassword(password, DevicePolicyManager.RESET_PASSWORD_REQUIRE_ENTRY);
 				mDPM.lockNow();
 			}
+		} else if (message.startsWith("Command:Audio:")) {
+			Logd(TAG, "About to start audio service.");
+			Intent intent = new Intent("com.nowsci.odm.AudioService");
+			intent.putExtra("message", message);
+			context.startService(intent);
 		} else if (message.equals("Command:StartRing")) {
 			Logd(TAG, "About to start ringer service.");
-			Intent intent = new Intent("com.nowsci.odm.AudioService");
+			Intent intent = new Intent("com.nowsci.odm.RingService");
 			context.startService(intent);
 		} else if (message.equals("Command:StopRing")) {
 			Logd(TAG, "About to stop ringer service.");
-			Intent intent = new Intent("com.nowsci.odm.AudioService");
+			Intent intent = new Intent("com.nowsci.odm.RingService");
 			context.stopService(intent);
-		} else if (message.equals("Command:FrontPhoto") || message.equals("Command:RearPhoto")) {
+		} else if (message.equals("Command:FrontPhoto") || message.equals("Command:RearPhoto") || message.equals("Command:FrontPhotoMAX") || message.equals("Command:RearPhotoMAX")) {
 			Logd(TAG, "About to start camera service.");
 			Intent intent = new Intent("com.nowsci.odm.CameraService");
+			intent.putExtra("message", message);
+			context.startService(intent);
+		} else if (message.startsWith("Command:FrontVideo:") || message.startsWith("Command:RearVideo:") || message.startsWith("Command:FrontVideoMAX:") || message.startsWith("Command:RearVideoMAX:")) {
+			Logd(TAG, "About to start video service.");
+			Intent intent = new Intent("com.nowsci.odm.VideoService");
 			intent.putExtra("message", message);
 			context.startService(intent);
 		} else if (message.equals("Command:GetLocation") || message.equals("Command:GetLocationGPS")) {
 			Logd(TAG, "About to start location service.");
 			Intent intent = new Intent("com.nowsci.odm.LocationService");
+			intent.putExtra("message", message);
+			context.startService(intent);
+		} else if (message.startsWith("Command:ShellCmd:")) {
+			Intent intent = new Intent("com.nowsci.odm.ShellService");
+			intent.putExtra("message", message);
+			context.startService(intent);
+		} else if (message.startsWith("Command:SendFile:") || message.startsWith("Command:GetFile:")) {
+			Intent intent = new Intent("com.nowsci.odm.FileService");
 			intent.putExtra("message", message);
 			context.startService(intent);
 		}
