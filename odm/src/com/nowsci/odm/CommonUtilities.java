@@ -249,7 +249,8 @@ public final class CommonUtilities extends Activity {
 		        connection.setDoInput(true);
 		        connection.setDoOutput(true);
 		        connection.setUseCaches(false);
-		        connection.setChunkedStreamingMode(1024);
+                //Don't use chunked post requests (nginx doesn't support requests without a Content-Length header)
+		        //connection.setChunkedStreamingMode(1024);
 		        // Enable POST method
 		        connection.setRequestMethod("POST");
 				setBasicAuthentication(connection, url);
