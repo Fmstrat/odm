@@ -1,4 +1,4 @@
-#Open Device Manager
+#Open Device Manager for Android
 
 Open Device Manager, or ODM, is a fully free, open source, end-to-end encrypted alternative to Google.s Android Device Manager that can be installed in right around 10 seconds. Building on the look and feel of the original ADM, ODM focuses on supporting additional features while giving users the security and privacy of a self-hosted, open source platform.
 
