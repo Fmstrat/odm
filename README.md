@@ -1,7 +1,4 @@
-odm
-=======
-
-ODM: Open Device Manager for Android
+#Open Device Manager
 
 Open Device Manager, or ODM, is a fully free, open source, end-to-end encrypted alternative to Google.s Android Device Manager that can be installed in right around 10 seconds. Building on the look and feel of the original ADM, ODM focuses on supporting additional features while giving users the security and privacy of a self-hosted, open source platform.
 
@@ -26,4 +23,47 @@ Features include:
 - Wipe device
 - Log of all previous activity
 
-Visit http://nowsci.com/odm for more details.
+#Installation
+
+Installation is simple and straightforward. Use the below or watch the video embedded above.
+
+- Extract the web archive to any folder on a system running PHP.
+- Edit include/config.php to turn on registrations (and change any other settings you would like): $ALLOW_REGISTRATIONS = true
+- Open mysql: mysql
+- Create the database: create database odm;
+- Exit mysql: exit;
+- Import database structure: mysql odm < sql/odm.sql
+
+Also, be sure php5-mcrypt and php5-curl are installed on your system.
+
+Please pose any questions or discussion to the thread at: http://forum.xda-developers.com/showthread.php?t=2601720
+
+#Configuration
+
+The following variables can be edited in config.php.
+
+Sets the database connection information:
+```
+$DB_HOST = "localhost";
+$DB_USER = "root";
+$DB_PASSWORD = "";
+$DB_DATABASE = "odm";
+```
+
+Whether or not to allow user registration. This must be true to create the first user, but can be disabled after that for security.
+```
+$ALLOW_REGISTRATIONS = false;
+```
+
+#To-Do
+
+- User testing
+- Fix bug in Android 4.0+ that crashes some devices when using the camera in a service
+- Improve new user registration process with email validation
+- Expert security audit of encryption scheme (I am not a security expert, and used samples provided online for the PHP to android methodology)
+
+#Change Log
+
+**v0.01 beta**
+
+- Beta release (see To-Do)
