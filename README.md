@@ -1,4 +1,4 @@
-#Open Device Manager for Android
+# Open Device Manager for Android
 
 Open Device Manager, or ODM, is a fully free, open source, end-to-end encrypted alternative to Google.s Android Device Manager that can be installed in right around 10 seconds. Building on the look and feel of the original ADM, ODM focuses on supporting additional features while giving users the security and privacy of a self-hosted, open source platform.
 
@@ -23,7 +23,7 @@ Features include:
 - Wipe device
 - Log of all previous activity
 
-#Installation
+# Installation
 
 Installation is simple and straightforward. Use the below or watch the video embedded above.
 
@@ -38,7 +38,7 @@ Also, be sure php5-mcrypt and php5-curl are installed on your system.
 
 Please pose any questions or discussion to the thread at: http://forum.xda-developers.com/showthread.php?t=2601720
 
-#Configuration
+# Configuration
 
 The following variables can be edited in config.php.
 
@@ -55,14 +55,14 @@ Whether or not to allow user registration. This must be true to create the first
 $ALLOW_REGISTRATIONS = false;
 ```
 
-#To-Do
+# To-Do
 
 - User testing
 - Fix bug in Android 4.0+ that crashes some devices when using the camera in a service
 - Improve new user registration process with email validation
 - Expert security audit of encryption scheme (I am not a security expert, and used samples provided online for the PHP to android methodology)
 
-#Change Log
+# Change Log
 
 **v0.01 beta**
 
