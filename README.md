@@ -23,6 +23,7 @@ Features include:
 - Wipe device
 - Log of all previous activity
 
+
 ## Installation
 
 Installation is simple and straightforward. Use the below or watch the video embedded above.
@@ -37,6 +38,7 @@ Installation is simple and straightforward. Use the below or watch the video emb
 Also, be sure php5-mcrypt and php5-curl are installed on your system.
 
 Please pose any questions or discussion to the thread at: http://forum.xda-developers.com/showthread.php?t=2601720
+
 
 ## Configuration
 
@@ -61,6 +63,7 @@ $ALLOW_REGISTRATIONS = false;
 - Fix bug in Android 4.0+ that crashes some devices when using the camera in a service
 - Improve new user registration process with email validation
 - Expert security audit of encryption scheme (I am not a security expert, and used samples provided online for the PHP to android methodology)
+
 
 ## Change Log
 
